@@ -7,11 +7,11 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Dashboard')] class extends Component {
-    /** @return ?Event */
+    /** @return Collection<int, Event> */
     #[Computed]
-    public function activeEvent(): ?Event
+    public function activeEvents(): Collection
     {
-        return auth()->user()->events()->whereNull('ended_at')->first();
+        return auth()->user()->events()->whereNull('ended_at')->latest()->get();
     }
 
     /** @return Collection<int, Event> */
@@ -29,31 +29,30 @@ new #[Title('Dashboard')] class extends Component {
 <div class="space-y-6">
     <flux:heading size="xl">{{ __('Dashboard') }}</flux:heading>
 
-    @if ($this->activeEvent)
+    <div class="flex items-center justify-between">
+        <flux:heading size="lg">{{ __('Active Events') }}</flux:heading>
+        <flux:button variant="primary" :href="route('events.create')" wire:navigate>
+            {{ __('Create Event') }}
+        </flux:button>
+    </div>
+
+    @forelse ($this->activeEvents as $event)
         <flux:card>
             <div class="flex items-center justify-between">
                 <div>
-                    <flux:heading size="lg">{{ $this->activeEvent->name }}</flux:heading>
-                    <flux:subheading>{{ __('Active Event') }} &middot; {{ __('Join code:') }} {{ $this->activeEvent->slug }}</flux:subheading>
+                    <flux:heading size="lg">{{ $event->name }}</flux:heading>
+                    <flux:subheading>{{ __('Join code:') }} {{ $event->slug }}</flux:subheading>
                 </div>
-                <flux:button variant="primary" :href="route('events.show', $this->activeEvent)" wire:navigate>
+                <flux:button variant="primary" :href="route('events.show', $event)" wire:navigate>
                     {{ __('Manage Event') }}
                 </flux:button>
             </div>
         </flux:card>
-    @else
+    @empty
         <flux:card>
-            <div class="flex items-center justify-between">
-                <div>
-                    <flux:heading size="lg">{{ __('No Active Event') }}</flux:heading>
-                    <flux:subheading>{{ __('Create a new trivia event to get started.') }}</flux:subheading>
-                </div>
-                <flux:button variant="primary" :href="route('events.create')" wire:navigate>
-                    {{ __('Create Event') }}
-                </flux:button>
-            </div>
+            <flux:subheading>{{ __('No active events. Create one to get started.') }}</flux:subheading>
         </flux:card>
-    @endif
+    @endforelse
 
     @if ($this->pastEvents->isNotEmpty())
         <div>

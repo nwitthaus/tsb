@@ -14,7 +14,7 @@ class EventPolicy
 
     public function create(User $user): bool
     {
-        return ! $user->events()->whereNull('ended_at')->exists();
+        return true;
     }
 
     public function update(User $user, Event $event): bool

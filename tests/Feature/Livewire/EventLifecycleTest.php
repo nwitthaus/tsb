@@ -25,7 +25,7 @@ test('host can reopen an ended event', function () {
     expect($event->fresh()->ended_at)->toBeNull();
 });
 
-test('cannot reopen event if user already has an active event', function () {
+test('can reopen event even if user has another active event', function () {
     $user = User::factory()->create();
     Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);
     $endedEvent = Event::factory()->ended()->create(['user_id' => $user->id]);
@@ -33,9 +33,9 @@ test('cannot reopen event if user already has an active event', function () {
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $endedEvent])
         ->call('reopenEvent')
-        ->assertHasErrors();
+        ->assertHasNoErrors();
 
-    expect($endedEvent->fresh()->ended_at)->not->toBeNull();
+    expect($endedEvent->fresh()->ended_at)->toBeNull();
 });
 
 test('ended event shows read-only grid', function () {

@@ -56,11 +56,11 @@ test('slug must be unique', function () {
         ->assertHasErrors(['slug' => 'unique']);
 });
 
-test('user with active event cannot create another', function () {
+test('user with active event can create another', function () {
     $user = User::factory()->create();
     Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);
 
     $this->actingAs($user)
         ->get(route('events.create'))
-        ->assertForbidden();
+        ->assertOk();
 });

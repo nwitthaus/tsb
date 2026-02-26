@@ -23,16 +23,9 @@ test('user can create event when they have no active events', function () {
     expect($user->can('create', Event::class))->toBeTrue();
 });
 
-test('user cannot create event when they have an active event', function () {
+test('user can create event when they already have an active event', function () {
     $user = User::factory()->create();
     Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);
-
-    expect($user->can('create', Event::class))->toBeFalse();
-});
-
-test('user can create event when all their events are ended', function () {
-    $user = User::factory()->create();
-    Event::factory()->ended()->create(['user_id' => $user->id]);
 
     expect($user->can('create', Event::class))->toBeTrue();
 });
