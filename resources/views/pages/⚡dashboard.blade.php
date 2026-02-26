@@ -42,6 +42,7 @@ new #[Title('Dashboard')] class extends Component {
                 <div>
                     <flux:heading size="lg">{{ $event->name }}</flux:heading>
                     <flux:subheading>{{ __('Join code:') }} {{ $event->slug }}</flux:subheading>
+                    <flux:subheading>{{ $event->starts_at->format('M j, Y g:i A') }}</flux:subheading>
                 </div>
                 <flux:button variant="primary" :href="route('events.show', $event)" wire:navigate>
                     {{ __('Manage Event') }}
@@ -60,6 +61,7 @@ new #[Title('Dashboard')] class extends Component {
             <flux:table>
                 <flux:table.columns>
                     <flux:table.column>{{ __('Event') }}</flux:table.column>
+                    <flux:table.column>{{ __('Scheduled') }}</flux:table.column>
                     <flux:table.column>{{ __('Teams') }}</flux:table.column>
                     <flux:table.column>{{ __('Ended') }}</flux:table.column>
                     <flux:table.column></flux:table.column>
@@ -68,6 +70,7 @@ new #[Title('Dashboard')] class extends Component {
                     @foreach ($this->pastEvents as $event)
                         <flux:table.row :key="$event->id">
                             <flux:table.cell>{{ $event->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $event->starts_at->format('M j, Y g:i A') }}</flux:table.cell>
                             <flux:table.cell>{{ $event->teams_count }}</flux:table.cell>
                             <flux:table.cell>{{ $event->ended_at->diffForHumans() }}</flux:table.cell>
                             <flux:table.cell>

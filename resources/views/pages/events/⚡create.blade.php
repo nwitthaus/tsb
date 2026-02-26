@@ -13,6 +13,9 @@ new #[Title('Create Event')] class extends Component {
     #[Validate('required|string|max:100|unique:events,slug|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/')]
     public string $slug = '';
 
+    #[Validate('required|date|after_or_equal:today')]
+    public string $starts_at = '';
+
     public function mount(): void
     {
         $this->authorize('create', Event::class);
@@ -55,6 +58,14 @@ new #[Title('Create Event')] class extends Component {
             :label="__('Join Code')"
             :description="__('This is the URL slug teams will use to find your scoreboard.')"
             :placeholder="__('tuesday-trivia-at-joes')"
+            required
+        />
+
+        <flux:input
+            wire:model="starts_at"
+            type="datetime-local"
+            :label="__('Scheduled Start')"
+            :min="now()->format('Y-m-d\TH:i')"
             required
         />
 

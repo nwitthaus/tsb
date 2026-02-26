@@ -19,6 +19,7 @@ class EventFactory extends Factory
             'user_id' => User::factory(),
             'name' => $name,
             'slug' => Str::slug($name),
+            'starts_at' => fake()->dateTimeBetween('now', '+2 weeks'),
             'ended_at' => null,
         ];
     }

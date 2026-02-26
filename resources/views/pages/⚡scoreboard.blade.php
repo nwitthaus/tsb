@@ -67,6 +67,7 @@ class extends Component {
     {{-- Header --}}
     <div class="mb-6 text-center">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-white">{{ $event->name }}</h1>
+        <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{{ $event->starts_at->format('M j, Y g:i A') }}</p>
         @if ($event->isActive())
             <p class="mt-1 text-lg text-emerald-600 dark:text-emerald-400 font-medium">Live Scoreboard</p>
         @else

@@ -12,7 +12,7 @@
     <div class="mb-6 flex items-center justify-between">
         <div>
             <flux:heading size="xl">{{ $event->name }}</flux:heading>
-            <flux:subheading>{{ __('Join code:') }} <span class="font-mono font-semibold">{{ $event->slug }}</span></flux:subheading>
+            <flux:subheading>{{ $event->starts_at->format('M j, Y g:i A') }} &middot; {{ __('Join code:') }} <span class="font-mono font-semibold">{{ $event->slug }}</span></flux:subheading>
         </div>
     </div>
 

@@ -10,6 +10,7 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
         ->test('pages::events.create')
         ->set('name', 'Integration Test Trivia')
         ->set('slug', 'integration-test')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
         ->call('save');
 
     $event = $user->events()->first();

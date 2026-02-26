@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Tuesday Trivia at Joe\'s',
             'slug' => 'tuesday-trivia',
+            'starts_at' => now()->addHours(2),
         ]);
 
         $teams = collect([

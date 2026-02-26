@@ -20,6 +20,7 @@ class Event extends Model
         'user_id',
         'name',
         'slug',
+        'starts_at',
         'ended_at',
     ];
 
@@ -29,6 +30,7 @@ class Event extends Model
     protected function casts(): array
     {
         return [
+            'starts_at' => 'datetime',
             'ended_at' => 'datetime',
         ];
     }

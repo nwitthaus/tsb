@@ -13,11 +13,11 @@
 
 namespace App\Models{
 /**
- * @mixin IdeHelperEvent
  * @property int $id
  * @property int $user_id
  * @property string $name
  * @property string $slug
+ * @property \Carbon\CarbonImmutable $starts_at
  * @property \Carbon\CarbonImmutable|null $ended_at
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
@@ -35,15 +35,17 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStartsAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Event extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperEvent {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperRound
  * @property int $id
  * @property int $event_id
  * @property int $sort_order
@@ -61,13 +63,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Round extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperRound {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperScore
  * @property int $id
  * @property int $team_id
  * @property int $round_id
@@ -86,13 +89,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereTeamId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereValue($value)
+ * @mixin \Eloquent
  */
-	class Score extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperScore {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperTeam
  * @property int $id
  * @property int $event_id
  * @property string|null $name
@@ -119,13 +123,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
+ * @mixin \Eloquent
  */
-	class Team extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperTeam {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperUser
  * @property int $id
  * @property string $name
  * @property string $email
@@ -156,7 +161,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorRecoveryCodes($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class User extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperUser {}
 }
 
