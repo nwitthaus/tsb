@@ -90,6 +90,49 @@ test('slug must be unique', function () {
         ->assertHasErrors(['slug' => 'unique']);
 });
 
+test('creating event with tables pre-creates numbered teams', function () {
+    $user = User::factory()->create();
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::events.create')
+        ->set('name', 'Table Trivia')
+        ->set('slug', 'table-trivia')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->set('tables', 5)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $event = Event::first();
+    expect($event->teams()->count())->toBe(5)
+        ->and($event->teams()->pluck('table_number')->all())->toBe([1, 2, 3, 4, 5])
+        ->and($event->teams()->pluck('sort_order')->all())->toBe([1, 2, 3, 4, 5]);
+});
+
+test('creating event without tables creates no teams', function () {
+    $user = User::factory()->create();
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::events.create')
+        ->set('name', 'No Tables')
+        ->set('slug', 'no-tables')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(Event::first()->teams()->count())->toBe(0);
+});
+
+test('tables must be at least 1', function () {
+    Livewire\Livewire::actingAs(User::factory()->create())
+        ->test('pages::events.create')
+        ->set('name', 'My Event')
+        ->set('slug', 'my-event')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->set('tables', 0)
+        ->call('save')
+        ->assertHasErrors(['tables']);
+});
+
 test('user with active event can create another', function () {
     $user = User::factory()->create();
     Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);

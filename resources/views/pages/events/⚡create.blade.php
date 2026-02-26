@@ -16,6 +16,9 @@ new #[Title('Create Event')] class extends Component {
     #[Validate('required|date|after_or_equal:today')]
     public string $starts_at = '';
 
+    #[Validate('nullable|integer|min:1|max:200')]
+    public ?int $tables = null;
+
     public function mount(): void
     {
         $this->authorize('create', Event::class);
@@ -34,7 +37,19 @@ new #[Title('Create Event')] class extends Component {
 
         $validated = $this->validate();
 
+        $tables = $validated['tables'] ?? null;
+        unset($validated['tables']);
+
         $event = auth()->user()->events()->create($validated);
+
+        if ($tables) {
+            for ($i = 1; $i <= $tables; $i++) {
+                $event->teams()->create([
+                    'table_number' => $i,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
 
         $this->redirect(route('events.teams', $event), navigate: true);
     }
@@ -67,6 +82,16 @@ new #[Title('Create Event')] class extends Component {
             :label="__('Scheduled Start')"
             :min="now()->format('Y-m-d\TH:i')"
             required
+        />
+
+        <flux:input
+            wire:model="tables"
+            type="number"
+            :label="__('Number of Tables')"
+            :description="__('Pre-creates teams numbered 1 through this value. Leave blank to add teams manually.')"
+            :placeholder="__('e.g. 20')"
+            min="1"
+            max="200"
         />
 
         <div class="flex justify-end">
