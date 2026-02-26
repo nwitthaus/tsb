@@ -42,6 +42,39 @@ class EventScoringGrid extends Component
         }
     }
 
+    public function addTeam(?string $name, ?int $tableNumber): void
+    {
+        if (! $name && ! $tableNumber) {
+            $this->addError('team', 'A team must have at least a name or table number.');
+
+            return;
+        }
+
+        $maxSortOrder = $this->event->teams()->max('sort_order') ?? 0;
+
+        $this->event->teams()->create([
+            'name' => $name,
+            'table_number' => $tableNumber,
+            'sort_order' => $maxSortOrder + 1,
+        ]);
+
+        $this->loadGrid();
+    }
+
+    public function removeTeam(int $teamId): void
+    {
+        $team = $this->event->teams()->findOrFail($teamId);
+        $team->delete();
+        $this->loadGrid();
+    }
+
+    public function restoreTeam(int $teamId): void
+    {
+        $team = $this->event->teams()->withTrashed()->findOrFail($teamId);
+        $team->restore();
+        $this->loadGrid();
+    }
+
     public function render(): View
     {
         return view('livewire.event-scoring-grid');
