@@ -13,6 +13,7 @@
 
 namespace App\Models{
 /**
+ * @mixin IdeHelperEvent
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -36,14 +37,13 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUserId($value)
- * @mixin \Eloquent
  */
-	#[\AllowDynamicProperties]
-	class IdeHelperEvent {}
+	class Event extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
+ * @mixin IdeHelperRound
  * @property int $id
  * @property int $event_id
  * @property int $sort_order
@@ -61,14 +61,13 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereUpdatedAt($value)
- * @mixin \Eloquent
  */
-	#[\AllowDynamicProperties]
-	class IdeHelperRound {}
+	class Round extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
+ * @mixin IdeHelperScore
  * @property int $id
  * @property int $team_id
  * @property int $round_id
@@ -87,14 +86,13 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereTeamId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereValue($value)
- * @mixin \Eloquent
  */
-	#[\AllowDynamicProperties]
-	class IdeHelperScore {}
+	class Score extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
+ * @mixin IdeHelperTeam
  * @property int $id
  * @property int $event_id
  * @property string|null $name
@@ -121,14 +119,13 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
- * @mixin \Eloquent
  */
-	#[\AllowDynamicProperties]
-	class IdeHelperTeam {}
+	class Team extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
+ * @mixin IdeHelperUser
  * @property int $id
  * @property string $name
  * @property string $email
@@ -159,9 +156,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorRecoveryCodes($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
- * @mixin \Eloquent
  */
-	#[\AllowDynamicProperties]
-	class IdeHelperUser {}
+	class User extends \Eloquent {}
 }
 
