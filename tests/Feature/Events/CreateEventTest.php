@@ -23,7 +23,7 @@ test('user can create an event', function () {
         ->set('slug', 'tuesday-trivia')
         ->set('starts_at', $startsAt)
         ->call('save')
-        ->assertRedirect(route('events.show', Event::first()));
+        ->assertRedirect(route('events.scoring', Event::first()));
 
     expect(Event::count())->toBe(1)
         ->and(Event::first()->name)->toBe('Tuesday Trivia')
