@@ -30,6 +30,14 @@
                 <flux:button size="sm" variant="ghost" icon="clipboard" x-on:click="navigator.clipboard.writeText('{{ $this->scoreboardUrl }}')">
                     {{ __('Copy Link') }}
                 </flux:button>
+                <flux:button size="sm" variant="ghost" icon="arrow-down-tray" x-on:click="
+                    const a = document.createElement('a');
+                    a.href = '{{ $this->qrCodePng }}';
+                    a.download = '{{ $event->slug }}-qr.png';
+                    a.click();
+                ">
+                    {{ __('Download QR') }}
+                </flux:button>
             </div>
         </div>
     </div>

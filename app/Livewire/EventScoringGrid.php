@@ -234,7 +234,20 @@ class EventScoringGrid extends Component
     {
         $options = new QROptions([
             'outputType' => QRCode::OUTPUT_MARKUP_SVG,
+            'outputBase64' => false,
             'scale' => 5,
+            'addQuietzone' => true,
+        ]);
+
+        return (new QRCode($options))->render($this->scoreboardUrl());
+    }
+
+    #[Computed]
+    public function qrCodePng(): string
+    {
+        $options = new QROptions([
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'scale' => 10,
             'addQuietzone' => true,
         ]);
 
