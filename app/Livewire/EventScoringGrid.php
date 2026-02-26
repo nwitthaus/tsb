@@ -43,7 +43,7 @@ class EventScoringGrid extends Component
         $this->scores = [];
         foreach ($this->teams as $team) {
             foreach ($team->scores as $score) {
-                $this->scores[$team->id.'-'.$score->round_id] = $score->value;
+                $this->scores[$team->id.'-'.$score->round_id] = (float) $score->value + 0;
             }
         }
     }
@@ -193,7 +193,7 @@ class EventScoringGrid extends Component
             ['value' => $value],
         );
 
-        $this->scores[$teamId.'-'.$roundId] = $value;
+        $this->scores[$teamId.'-'.$roundId] = (float) $value + 0;
     }
 
     public function endEvent(): void

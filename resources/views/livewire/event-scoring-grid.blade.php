@@ -143,7 +143,7 @@
                                         $total += (float) ($scores[$team->id . '-' . $r->id] ?? 0);
                                     }
                                 @endphp
-                                {{ $total > 0 ? number_format($total, 1) : '-' }}
+                                {{ $total > 0 ? (fmod($total, 1) ? number_format($total, 1) : (int) $total) : '-' }}
                             </td>
                             @if ($event->isActive())
                                 <td class="px-1 py-1">
