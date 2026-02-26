@@ -43,7 +43,7 @@ test('ended event shows read-only grid', function () {
     $event = Event::factory()->ended()->create(['user_id' => $user->id, 'name' => 'Past Trivia']);
 
     $this->actingAs($user)
-        ->get(route('events.show', $event))
+        ->get(route('events.scoring', $event))
         ->assertOk()
         ->assertSee('Past Trivia')
         ->assertSee('Reopen');
