@@ -20,6 +20,8 @@ namespace App\Models{
  * @property \Carbon\CarbonImmutable|null $ended_at
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property-read int|null $teams_count
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\EventFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
@@ -36,6 +38,38 @@ namespace App\Models{
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperEvent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $event_id
+ * @property string|null $name
+ * @property int|null $table_number
+ * @property int $sort_order
+ * @property \Carbon\CarbonImmutable|null $deleted_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \App\Models\Event $event
+ * @method static \Database\Factories\TeamFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereTableNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperTeam {}
 }
 
 namespace App\Models{
