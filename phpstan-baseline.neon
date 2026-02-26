@@ -7,6 +7,18 @@ parameters:
 			path: app/Actions/Fortify/CreateNewUser.php
 
 		-
+			message: '#^Argument of an invalid type Illuminate\\Support\\Collection supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: app/Livewire/EventScoringGrid.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Event\:\:teams\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Livewire/EventScoringGrid.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Round, \$this\(App\\Models\\Event\)\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1

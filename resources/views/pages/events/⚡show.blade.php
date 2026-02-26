@@ -14,6 +14,5 @@ new #[Title('Manage Event')] class extends Component {
 }; ?>
 
 <div>
-    <flux:heading size="xl">{{ $event->name }}</flux:heading>
-    <flux:subheading>{{ __('Event management page - coming soon') }}</flux:subheading>
+    <livewire:event-scoring-grid :event="$event" />
 </div>
