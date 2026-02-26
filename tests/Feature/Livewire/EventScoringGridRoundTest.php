@@ -71,3 +71,15 @@ test('cannot remove round when there are no rounds', function () {
 
     expect($event->rounds()->count())->toBe(0);
 });
+
+test('scoring grid rounds use responsive compact column widths', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    Team::factory()->create(['event_id' => $event->id]);
+    Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->assertSeeHtml('w-12 px-1 py-2 text-center font-medium sm:w-14 sm:px-1.5 md:w-16 md:px-2')
+        ->assertSeeHtml('w-14 px-1 py-2 text-center font-medium sm:w-16 sm:px-1.5 md:px-2');
+});

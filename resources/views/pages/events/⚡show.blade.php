@@ -89,6 +89,7 @@ new #[Title('Event Details')] class extends Component {
 
     <flux:tabs class="mb-6">
         <flux:tab selected>{{ __('Details') }}</flux:tab>
+        <flux:tab :href="route('events.teams', $event)" wire:navigate>{{ __('Teams') }}</flux:tab>
         <flux:tab :href="route('events.scoring', $event)" wire:navigate>{{ __('Scoring') }}</flux:tab>
     </flux:tabs>
 

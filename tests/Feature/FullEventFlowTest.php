@@ -16,12 +16,17 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
     $event = $user->events()->first();
     expect($event)->not->toBeNull();
 
-    // Set up teams and rounds, enter scores
+    // Add teams via teams manager
+    $teamsManager = Livewire\Livewire::actingAs($user)
+        ->test('event-teams-manager', ['event' => $event]);
+
+    $teamsManager->call('addTeam', 'Team Alpha', 1);
+    $teamsManager->call('addTeam', 'Team Beta', 2);
+
+    // Set up rounds and enter scores via scoring grid
     $grid = Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event]);
 
-    $grid->call('addTeam', 'Team Alpha', 1);
-    $grid->call('addTeam', 'Team Beta', 2);
     $grid->call('addRound');
     $grid->call('addRound');
 

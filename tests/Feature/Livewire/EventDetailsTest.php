@@ -12,6 +12,7 @@ test('show page loads and displays event details form', function () {
         ->assertOk()
         ->assertSee('Tuesday Trivia')
         ->assertSee('Details')
+        ->assertSee('Teams')
         ->assertSee('Scoring');
 });
 

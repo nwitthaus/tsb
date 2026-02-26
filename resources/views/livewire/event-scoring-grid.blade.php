@@ -1,6 +1,4 @@
 <div x-data="{
-    newTeamName: '',
-    newTeamTableNumber: '',
     move(row, col, totalRows, totalCols, dRow, dCol) {
         const nextRow = (row + dRow + totalRows) % totalRows;
         const nextCol = (col + dCol + totalCols) % totalCols;
@@ -35,9 +33,6 @@
                             <th class="w-12 px-1 py-2 text-center font-medium sm:w-14 sm:px-1.5 md:w-16 md:px-2">R{{ $round->sort_order }}</th>
                         @endforeach
                         <th class="w-14 px-1 py-2 text-center font-medium sm:w-16 sm:px-1.5 md:px-2">{{ __('Total') }}</th>
-                        @if ($event->isActive())
-                            <th class="w-10 px-3 py-2"></th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -91,17 +86,6 @@
                                 @endphp
                                 {{ $total > 0 ? (fmod($total, 1) ? number_format($total, 1) : (int) $total) : '-' }}
                             </td>
-                            @if ($event->isActive())
-                                <td class="px-1 py-1">
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
-                                        icon="x-mark"
-                                        wire:click="removeTeam({{ $team->id }})"
-                                        wire:confirm="{{ __('Remove this team? This can be undone.') }}"
-                                    />
-                                </td>
-                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -116,21 +100,12 @@
     {{-- Control Bar (active event only) --}}
     @if ($event->isActive())
         <div class="mt-4 flex flex-wrap items-center gap-2">
-            <flux:modal.trigger name="add-team">
-                <flux:button size="sm" icon="plus">{{ __('Add Team') }}</flux:button>
-            </flux:modal.trigger>
-
             <flux:button size="sm" icon="plus" wire:click="addRound">{{ __('Add Round') }}</flux:button>
 
             @if ($rounds->isNotEmpty())
                 <flux:modal.trigger name="confirm-remove-round">
                     <flux:button size="sm" variant="danger" icon="minus">{{ __('Remove Last Round') }}</flux:button>
                 </flux:modal.trigger>
-            @endif
-
-            @if ($teams->count() > 1)
-                <flux:button size="sm" variant="ghost" wire:click="reorderTeams('alphabetical')">{{ __('Sort A-Z') }}</flux:button>
-                <flux:button size="sm" variant="ghost" wire:click="reorderTeams('table_number')">{{ __('Sort by Table') }}</flux:button>
             @endif
 
             <div class="ml-auto">
@@ -140,35 +115,6 @@
             </div>
         </div>
     @endif
-
-    {{-- Add Team Modal --}}
-    <flux:modal name="add-team" class="md:w-96">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">{{ __('Add Team') }}</flux:heading>
-                <flux:subheading>{{ __('Enter a team name and/or table number.') }}</flux:subheading>
-            </div>
-
-            <flux:input x-model="newTeamName" :label="__('Team Name')" :placeholder="__('Quizly Bears')" />
-            <flux:input x-model="newTeamTableNumber" type="number" :label="__('Table Number')" :placeholder="__('3')" />
-
-            @error('team') <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-
-            <div class="flex justify-end gap-2">
-                <flux:modal.close>
-                    <flux:button>{{ __('Cancel') }}</flux:button>
-                </flux:modal.close>
-                <flux:button variant="primary" x-on:click="
-                    await $wire.addTeam(newTeamName || null, newTeamTableNumber ? parseInt(newTeamTableNumber) : null);
-                    if (! Object.keys($wire.__instance.canonical.errors).length) {
-                        newTeamName = '';
-                        newTeamTableNumber = '';
-                        $flux.modal('add-team').close();
-                    }
-                ">{{ __('Add Team') }}</flux:button>
-            </div>
-        </div>
-    </flux:modal>
 
     {{-- Confirm Remove Last Round Modal --}}
     <flux:modal name="confirm-remove-round" class="md:w-96">

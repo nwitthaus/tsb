@@ -4,7 +4,7 @@ use App\Models\Event;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Scoring Grid')] class extends Component {
+new #[Title('Teams')] class extends Component {
     public Event $event;
 
     public function mount(Event $event): void
@@ -18,9 +18,9 @@ new #[Title('Scoring Grid')] class extends Component {
 
     <flux:tabs class="mb-6">
         <flux:tab :href="route('events.show', $event)" wire:navigate>{{ __('Details') }}</flux:tab>
-        <flux:tab :href="route('events.teams', $event)" wire:navigate>{{ __('Teams') }}</flux:tab>
-        <flux:tab selected>{{ __('Scoring') }}</flux:tab>
+        <flux:tab selected>{{ __('Teams') }}</flux:tab>
+        <flux:tab :href="route('events.scoring', $event)" wire:navigate>{{ __('Scoring') }}</flux:tab>
     </flux:tabs>
 
-    <livewire:event-scoring-grid :event="$event" />
+    <livewire:event-teams-manager :event="$event" />
 </div>
