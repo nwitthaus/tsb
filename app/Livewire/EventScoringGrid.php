@@ -6,9 +6,12 @@ use App\Models\Event;
 use App\Models\Round;
 use App\Models\Score;
 use App\Models\Team;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class EventScoringGrid extends Component
@@ -166,6 +169,24 @@ class EventScoringGrid extends Component
 
         $this->event->update(['ended_at' => null]);
         $this->event->refresh();
+    }
+
+    #[Computed]
+    public function scoreboardUrl(): string
+    {
+        return url('/'.$this->event->slug);
+    }
+
+    #[Computed]
+    public function qrCode(): string
+    {
+        $options = new QROptions([
+            'outputType' => QRCode::OUTPUT_MARKUP_SVG,
+            'scale' => 5,
+            'addQuietzone' => true,
+        ]);
+
+        return (new QRCode($options))->render($this->scoreboardUrl());
     }
 
     public function render(): View

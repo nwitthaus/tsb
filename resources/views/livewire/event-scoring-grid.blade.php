@@ -16,6 +16,24 @@
         </div>
     </div>
 
+    {{-- Share Scoreboard --}}
+    <div class="mb-6 flex items-start gap-6 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+        <div class="shrink-0">
+            <div class="size-[150px] rounded bg-white p-2 [&_svg]:size-full">
+                {!! $this->qrCode !!}
+            </div>
+        </div>
+        <div>
+            <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{{ __('Share this scoreboard') }}</p>
+            <a href="{{ $this->scoreboardUrl }}" target="_blank" class="mt-1 block font-mono text-sm text-blue-600 hover:underline dark:text-blue-400">{{ $this->scoreboardUrl }}</a>
+            <div class="mt-2 flex gap-2">
+                <flux:button size="sm" variant="ghost" icon="clipboard" x-on:click="navigator.clipboard.writeText('{{ $this->scoreboardUrl }}')">
+                    {{ __('Copy Link') }}
+                </flux:button>
+            </div>
+        </div>
+    </div>
+
     {{-- Ended Event Banner --}}
     @if (! $event->isActive())
         <flux:callout variant="warning" class="mb-6">
