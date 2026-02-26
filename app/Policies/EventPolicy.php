@@ -7,6 +7,15 @@ use App\Models\User;
 
 class EventPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return null;
+    }
+
     public function view(User $user, Event $event): bool
     {
         return $user->id === $event->user_id;

@@ -43,3 +43,24 @@ test('non-owner cannot update event', function () {
 
     expect($otherUser->can('update', $event))->toBeFalse();
 });
+
+test('super admin can view any event', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $event = Event::factory()->create();
+
+    expect($admin->can('view', $event))->toBeTrue();
+});
+
+test('super admin can update any event', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $event = Event::factory()->create();
+
+    expect($admin->can('update', $event))->toBeTrue();
+});
+
+test('super admin can delete any event', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $event = Event::factory()->create();
+
+    expect($admin->can('delete', $event))->toBeTrue();
+});
