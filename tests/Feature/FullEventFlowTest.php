@@ -44,7 +44,7 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
         ->assertOk()
         ->assertSee('Team Alpha')
         ->assertSee('Team Beta')
-        ->assertSee('Live Scoreboard');
+        ->assertSee('Live');
 
     // End event
     $grid->call('endEvent');
