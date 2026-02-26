@@ -84,15 +84,17 @@
     {{-- Scoring Grid --}}
     @if ($teams->isNotEmpty())
         <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
-            <table class="w-full text-sm">
+            <table class="w-full table-fixed text-sm">
                 <thead>
                     <tr class="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
-                        <th class="px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
+                        @if ($teams->contains(fn ($t) => $t->name !== null))
+                            <th class="w-44 px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
+                        @endif
                         <th class="w-16 px-3 py-2 text-center font-medium">{{ __('Table') }}</th>
                         @foreach ($rounds as $round)
-                            <th class="w-20 px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
+                            <th class="w-12 px-1 py-2 text-center font-medium sm:w-14 sm:px-1.5 md:w-16 md:px-2">R{{ $round->sort_order }}</th>
                         @endforeach
-                        <th class="w-20 px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
+                        <th class="w-14 px-1 py-2 text-center font-medium sm:w-16 sm:px-1.5 md:px-2">{{ __('Total') }}</th>
                         @if ($event->isActive())
                             <th class="w-10 px-3 py-2"></th>
                         @endif
@@ -101,14 +103,16 @@
                 <tbody>
                     @foreach ($teams as $rowIndex => $team)
                         <tr class="border-b border-neutral-100 dark:border-neutral-800" wire:key="team-{{ $team->id }}">
-                            <td class="px-3 py-1 font-medium">{{ $team->displayName() }}</td>
+                            @if ($teams->contains(fn ($t) => $t->name !== null))
+                                <td class="px-3 py-1 font-medium">{{ $team->displayName() }}</td>
+                            @endif
                             <td class="px-3 py-1 text-center text-neutral-500">{{ $team->table_number }}</td>
                             @foreach ($rounds as $colIndex => $round)
                                 @php
                                     $key = $team->id . '-' . $round->id;
                                     $hasScore = isset($scores[$key]);
                                 @endphp
-                                <td class="px-1 py-1" wire:key="cell-{{ $key }}">
+                                <td class="px-0.5 py-1 sm:px-1" wire:key="cell-{{ $key }}">
                                     @if ($event->isActive())
                                         <input
                                             type="text"
@@ -116,7 +120,7 @@
                                             value="{{ $scores[$key] ?? '' }}"
                                             data-row="{{ $rowIndex }}"
                                             data-col="{{ $colIndex }}"
-                                            class="w-full rounded border px-2 py-1 text-center text-sm transition-colors
+                                            class="w-full rounded border px-0.5 py-1 text-center text-xs transition-colors sm:px-1.5 sm:text-sm
                                                 {{ $hasScore
                                                     ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30'
                                                     : 'border-neutral-300 bg-white dark:border-neutral-600 dark:bg-neutral-900'
