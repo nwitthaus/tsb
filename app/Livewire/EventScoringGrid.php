@@ -6,12 +6,10 @@ use App\Models\Event;
 use App\Models\Round;
 use App\Models\Score;
 use App\Models\Team;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
-use Livewire\Attributes\Computed;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class EventScoringGrid extends Component
@@ -50,6 +48,8 @@ class EventScoringGrid extends Component
 
     public function addTeam(?string $name, ?int $tableNumber): void
     {
+        $this->resetErrorBag('team');
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -63,8 +63,12 @@ class EventScoringGrid extends Component
         $validator = Validator::make(
             ['name' => $name, 'table_number' => $tableNumber],
             [
-                'name' => ['nullable', 'string', 'max:255'],
-                'table_number' => ['nullable', 'integer', 'min:1'],
+                'name' => ['nullable', 'string', 'max:255', Rule::unique('teams')->where('event_id', $this->event->id)->whereNull('deleted_at')],
+                'table_number' => ['nullable', 'integer', 'min:1', Rule::unique('teams')->where('event_id', $this->event->id)->whereNull('deleted_at')],
+            ],
+            [
+                'name.unique' => 'A team with this name already exists.',
+                'table_number.unique' => 'A team with this table number already exists.',
             ],
         );
 
@@ -210,37 +214,6 @@ class EventScoringGrid extends Component
     {
         $this->event->update(['ended_at' => null]);
         $this->event->refresh();
-    }
-
-    #[Computed]
-    public function scoreboardUrl(): string
-    {
-        return url('/'.$this->event->slug);
-    }
-
-    #[Computed]
-    public function qrCode(): string
-    {
-        $options = new QROptions([
-            'outputType' => QRCode::OUTPUT_MARKUP_SVG,
-            'outputBase64' => false,
-            'scale' => 5,
-            'addQuietzone' => true,
-        ]);
-
-        return (new QRCode($options))->render($this->scoreboardUrl());
-    }
-
-    #[Computed]
-    public function qrCodePng(): string
-    {
-        $options = new QROptions([
-            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'scale' => 10,
-            'addQuietzone' => true,
-        ]);
-
-        return (new QRCode($options))->render($this->scoreboardUrl());
     }
 
     public function render(): View

@@ -36,7 +36,7 @@ new #[Title('Create Event')] class extends Component {
 
         $event = auth()->user()->events()->create($validated);
 
-        $this->redirect(route('events.show', $event), navigate: true);
+        $this->redirect(route('events.scoring', $event), navigate: true);
     }
 }; ?>
 
