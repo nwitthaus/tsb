@@ -84,15 +84,15 @@
     {{-- Scoring Grid --}}
     @if ($teams->isNotEmpty())
         <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
-            <table class="w-full table-fixed text-sm">
+            <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
-                        <th class="w-1/4 px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
+                        <th class="px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
                         <th class="w-16 px-3 py-2 text-center font-medium">{{ __('Table') }}</th>
                         @foreach ($rounds as $round)
-                            <th class="px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
+                            <th class="w-20 px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
                         @endforeach
-                        <th class="px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
+                        <th class="w-20 px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
                         @if ($event->isActive())
                             <th class="w-10 px-3 py-2"></th>
                         @endif
@@ -101,7 +101,7 @@
                 <tbody>
                     @foreach ($teams as $rowIndex => $team)
                         <tr class="border-b border-neutral-100 dark:border-neutral-800" wire:key="team-{{ $team->id }}">
-                            <td class="truncate px-3 py-1 font-medium">{{ $team->displayName() }}</td>
+                            <td class="px-3 py-1 font-medium">{{ $team->displayName() }}</td>
                             <td class="px-3 py-1 text-center text-neutral-500">{{ $team->table_number }}</td>
                             @foreach ($rounds as $colIndex => $round)
                                 @php
