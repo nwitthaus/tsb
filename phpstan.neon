@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - app/
+
+    scanFiles:
+        - _ide_helper_models.php
+        - _ide_helper.php
+
+    level: 5

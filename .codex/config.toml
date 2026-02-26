@@ -1,0 +1,12 @@
+[mcp_servers.laravel-boost]
+command = "php"
+args = ["artisan", "boost:mcp"]
+cwd = "C:\\Users\\Nick\\Herd\\trivia_scoreboard"
+
+[mcp_servers.herd]
+command = "php"
+args = ["C:/Users/Nick/.config/herd/bin/herd-mcp.phar"]
+cwd = "C:\\Users\\Nick\\Herd\\trivia_scoreboard"
+
+[mcp_servers.herd.env]
+SITE_PATH = "C:\\Users\\Nick\\Herd\\trivia_scoreboard"

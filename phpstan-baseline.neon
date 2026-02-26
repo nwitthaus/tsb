@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Illuminate\\Support\\Stringable\:\:explode\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\DB\:\:prohibitDestructiveCommands\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Http\\Request\:\:input\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Http\\Request\:\:ip\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Http\\Request\:\:session\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
