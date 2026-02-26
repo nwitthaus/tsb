@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Team;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -27,38 +29,90 @@ class extends Component {
 
         $this->redirect('/'.$event->slug, navigate: true);
     }
+
+    #[Computed]
+    public function eventCount(): int
+    {
+        return Event::count();
+    }
+
+    #[Computed]
+    public function teamCount(): int
+    {
+        return Team::count();
+    }
 }; ?>
 
-<div class="flex flex-col items-center justify-center min-h-[70vh]">
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-neutral-900 dark:text-white">Trivia Scoreboard</h1>
-        <p class="mt-3 text-lg text-neutral-500 dark:text-neutral-400">Live scoring for your trivia nights</p>
-    </div>
+<div class="min-h-screen bg-[#0a0a0a] font-body text-white">
+    {{-- Ticker bar --}}
+    <div class="h-1 animate-ticker bg-gradient-to-r from-red-600 via-amber-500 to-red-600"></div>
 
-    <div class="w-full max-w-sm">
-        <form wire:submit="join" class="space-y-4">
-            <flux:input
-                wire:model="code"
-                :label="__('Join Code')"
-                :placeholder="__('Enter your event code')"
-                autofocus
-            />
+    {{-- Hero --}}
+    <div class="relative overflow-hidden px-6 pb-12 pt-16 sm:px-12 md:px-20 lg:px-28">
+        {{-- Red radial glow --}}
+        <div class="pointer-events-none absolute -right-20 -top-32 size-[400px] rounded-full bg-red-600/10 blur-3xl"></div>
 
+        {{-- Live badge --}}
+        <div class="mb-8 inline-flex items-center gap-2 rounded bg-red-600 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.15em]">
+            <span class="inline-block size-2 animate-pulse-dot rounded-full bg-white"></span>
+            Live Scoring
+        </div>
+
+        {{-- Heading --}}
+        <h1 class="font-display text-5xl uppercase leading-none tracking-tight sm:text-6xl lg:text-7xl">
+            TRIVIA<br>
+            <span class="text-red-600">SCORE</span>BOARD
+        </h1>
+
+        <p class="mt-4 max-w-md text-lg font-light text-zinc-400">
+            Real-time scoring for your trivia nights. Free, fast, no app needed.
+        </p>
+
+        {{-- Join form --}}
+        <form wire:submit="join" class="mt-10 max-w-md">
+            <div class="flex">
+                <input
+                    wire:model="code"
+                    type="text"
+                    placeholder="ENTER CODE"
+                    maxlength="20"
+                    autofocus
+                    class="flex-1 rounded-l-lg border-2 border-white/10 border-r-transparent bg-white/5 px-5 py-3.5 font-mono text-base uppercase tracking-widest text-white placeholder-zinc-600 outline-none transition-colors focus:border-red-600 focus:border-r-transparent"
+                />
+                <button
+                    type="submit"
+                    class="rounded-r-lg border-2 border-red-600 bg-gradient-to-br from-red-600 to-red-700 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all hover:from-red-500 hover:to-red-600"
+                >
+                    Join&nbsp;Game
+                </button>
+            </div>
             @error('code')
-                <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
             @enderror
-
-            <flux:button variant="primary" type="submit" class="w-full">
-                {{ __('View Scoreboard') }}
-            </flux:button>
         </form>
 
-        <div class="mt-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            <p>{{ __('Are you a host?') }}</p>
-            <div class="mt-2 flex justify-center gap-4">
-                <a href="{{ route('login') }}" class="font-medium text-neutral-900 underline dark:text-white" wire:navigate>{{ __('Log in') }}</a>
-                <a href="{{ route('register') }}" class="font-medium text-neutral-900 underline dark:text-white" wire:navigate>{{ __('Register') }}</a>
-            </div>
+        {{-- Host links --}}
+        <p class="mt-8 text-sm text-zinc-500">
+            Hosting tonight?
+            <a href="{{ route('login') }}" class="font-semibold text-red-600 hover:text-red-500" wire:navigate>Log in</a>
+            or
+            <a href="{{ route('register') }}" class="font-semibold text-red-600 hover:text-red-500" wire:navigate>Create an account</a>
+        </p>
+    </div>
+
+    {{-- Stats strip --}}
+    <div class="flex border-t border-white/[0.06]">
+        <div class="flex-1 border-r border-white/[0.06] px-6 py-5 text-center sm:px-8">
+            <div class="font-display text-3xl text-red-600">{{ number_format($this->eventCount) }}</div>
+            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Events Hosted</div>
+        </div>
+        <div class="flex-1 border-r border-white/[0.06] px-6 py-5 text-center sm:px-8">
+            <div class="font-display text-3xl text-red-600">{{ number_format($this->teamCount) }}</div>
+            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Teams Scored</div>
+        </div>
+        <div class="flex-1 px-6 py-5 text-center sm:px-8">
+            <div class="font-display text-3xl text-red-600">5s</div>
+            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Live Refresh</div>
         </div>
     </div>
 </div>

@@ -4,9 +4,7 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-white antialiased dark:bg-neutral-950">
-        <div class="mx-auto max-w-4xl px-4 py-8">
-            {{ $slot }}
-        </div>
+        {{ $slot }}
         @fluxScripts
     </body>
 </html>

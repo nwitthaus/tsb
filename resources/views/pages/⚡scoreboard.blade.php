@@ -63,7 +63,7 @@ class extends Component {
 }; ?>
 
 {{-- wire:poll.5s only on active events --}}
-<div @if ($event->isActive()) wire:poll.5s @endif class="font-body">
+<div @if ($event->isActive()) wire:poll.5s @endif class="mx-auto max-w-4xl px-4 py-8 font-body">
     {{-- Blink animation for live dot --}}
     <style>
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
