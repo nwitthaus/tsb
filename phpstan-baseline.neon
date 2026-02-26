@@ -1,28 +1,28 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Round, \$this\(App\\Models\\Event\)\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Event.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Team, \$this\(App\\Models\\Event\)\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/Event.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<Illuminate\\Database\\Eloquent\\Model, \$this\(App\\Models\\Event\)\>\:\:orderBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/Event.php
-
-		-
-			message: '#^Class App\\Models\\Round not found\.$#'
+			message: '#^Class App\\Models\\Score not found\.$#'
 			identifier: class.notFound
 			count: 1
-			path: app/Models/Event.php
+			path: app/Models/Round.php
 
 		-
 			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Models/Event.php
+			path: app/Models/Round.php
 
 		-
 			message: '#^Class App\\Models\\Score not found\.$#'

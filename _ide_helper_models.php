@@ -20,6 +20,8 @@ namespace App\Models{
  * @property \Carbon\CarbonImmutable|null $ended_at
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Round> $rounds
+ * @property-read int|null $rounds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
  * @property-read int|null $teams_count
  * @property-read \App\Models\User $user
@@ -38,6 +40,29 @@ namespace App\Models{
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperEvent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $event_id
+ * @property int $sort_order
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \App\Models\Event $event
+ * @method static \Database\Factories\RoundFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Round whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperRound {}
 }
 
 namespace App\Models{
