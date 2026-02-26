@@ -133,6 +133,48 @@ test('tables must be at least 1', function () {
         ->assertHasErrors(['tables']);
 });
 
+test('creating event with rounds pre-creates rounds', function () {
+    $user = User::factory()->create();
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::events.create')
+        ->set('name', 'Round Trivia')
+        ->set('slug', 'round-trivia')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->set('rounds', 4)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $event = Event::first();
+    expect($event->rounds()->count())->toBe(4)
+        ->and($event->rounds()->pluck('sort_order')->all())->toBe([1, 2, 3, 4]);
+});
+
+test('creating event without rounds creates no rounds', function () {
+    $user = User::factory()->create();
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::events.create')
+        ->set('name', 'No Rounds')
+        ->set('slug', 'no-rounds')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(Event::first()->rounds()->count())->toBe(0);
+});
+
+test('rounds must be at least 1', function () {
+    Livewire\Livewire::actingAs(User::factory()->create())
+        ->test('pages::events.create')
+        ->set('name', 'My Event')
+        ->set('slug', 'my-event')
+        ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
+        ->set('rounds', 0)
+        ->call('save')
+        ->assertHasErrors(['rounds']);
+});
+
 test('user with active event can create another', function () {
     $user = User::factory()->create();
     Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);

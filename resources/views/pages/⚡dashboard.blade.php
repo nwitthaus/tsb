@@ -24,6 +24,13 @@ new #[Title('Dashboard')] class extends Component {
             ->latest('ended_at')
             ->get();
     }
+
+    public function deleteEvent(int $eventId): void
+    {
+        $event = Event::findOrFail($eventId);
+        $this->authorize('delete', $event);
+        $event->delete();
+    }
 }; ?>
 
 <div class="space-y-6">
@@ -44,9 +51,17 @@ new #[Title('Dashboard')] class extends Component {
                     <flux:subheading>{{ __('Join code:') }} {{ $event->slug }}</flux:subheading>
                     <flux:subheading>{{ $event->starts_at->format('M j, Y g:i A') }}</flux:subheading>
                 </div>
-                <flux:button variant="primary" :href="route('events.show', $event)" wire:navigate>
-                    {{ __('Manage Event') }}
-                </flux:button>
+                <div class="flex items-center gap-2">
+                    <flux:button variant="primary" :href="route('events.show', $event)" wire:navigate>
+                        {{ __('Manage Event') }}
+                    </flux:button>
+                    <flux:button
+                        variant="ghost"
+                        icon="trash"
+                        wire:click="deleteEvent({{ $event->id }})"
+                        wire:confirm="{{ __('Delete this event? This will permanently remove the event and all its teams, rounds, and scores. This cannot be undone.') }}"
+                    />
+                </div>
             </div>
         </flux:card>
     @empty
@@ -74,9 +89,18 @@ new #[Title('Dashboard')] class extends Component {
                             <flux:table.cell>{{ $event->teams_count }}</flux:table.cell>
                             <flux:table.cell>{{ $event->ended_at->diffForHumans() }}</flux:table.cell>
                             <flux:table.cell>
-                                <flux:button size="sm" variant="ghost" :href="route('events.show', $event)" wire:navigate>
-                                    {{ __('View') }}
-                                </flux:button>
+                                <div class="flex items-center gap-1">
+                                    <flux:button size="sm" variant="ghost" :href="route('events.show', $event)" wire:navigate>
+                                        {{ __('View') }}
+                                    </flux:button>
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="trash"
+                                        wire:click="deleteEvent({{ $event->id }})"
+                                        wire:confirm="{{ __('Delete this event? This will permanently remove the event and all its teams, rounds, and scores. This cannot be undone.') }}"
+                                    />
+                                </div>
                             </flux:table.cell>
                         </flux:table.row>
                     @endforeach

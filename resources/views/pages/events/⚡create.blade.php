@@ -19,6 +19,9 @@ new #[Title('Create Event')] class extends Component {
     #[Validate('nullable|integer|min:1|max:200')]
     public ?int $tables = null;
 
+    #[Validate('nullable|integer|min:1|max:50')]
+    public ?int $rounds = null;
+
     public function mount(): void
     {
         $this->authorize('create', Event::class);
@@ -38,7 +41,8 @@ new #[Title('Create Event')] class extends Component {
         $validated = $this->validate();
 
         $tables = $validated['tables'] ?? null;
-        unset($validated['tables']);
+        $rounds = $validated['rounds'] ?? null;
+        unset($validated['tables'], $validated['rounds']);
 
         $event = auth()->user()->events()->create($validated);
 
@@ -46,6 +50,14 @@ new #[Title('Create Event')] class extends Component {
             for ($i = 1; $i <= $tables; $i++) {
                 $event->teams()->create([
                     'table_number' => $i,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
+
+        if ($rounds) {
+            for ($i = 1; $i <= $rounds; $i++) {
+                $event->rounds()->create([
                     'sort_order' => $i,
                 ]);
             }
@@ -92,6 +104,16 @@ new #[Title('Create Event')] class extends Component {
             :placeholder="__('e.g. 20')"
             min="1"
             max="200"
+        />
+
+        <flux:input
+            wire:model="rounds"
+            type="number"
+            :label="__('Number of Rounds')"
+            :description="__('Pre-creates rounds on the scoring grid. You can add or remove rounds later.')"
+            :placeholder="__('e.g. 6')"
+            min="1"
+            max="50"
         />
 
         <div class="flex justify-end">
