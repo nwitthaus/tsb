@@ -50,6 +50,8 @@ namespace App\Models{
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \App\Models\Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Score> $scores
+ * @property-read int|null $scores_count
  * @method static \Database\Factories\RoundFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Round newQuery()
@@ -68,6 +70,32 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @property int $id
+ * @property int $team_id
+ * @property int $round_id
+ * @property numeric $value
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \App\Models\Round $round
+ * @property-read \App\Models\Team $team
+ * @method static \Database\Factories\ScoreFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereRoundId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Score whereValue($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperScore {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
  * @property int $event_id
  * @property string|null $name
  * @property int|null $table_number
@@ -76,6 +104,8 @@ namespace App\Models{
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \App\Models\Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Score> $scores
+ * @property-read int|null $scores_count
  * @method static \Database\Factories\TeamFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
