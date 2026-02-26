@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use App\Models\Event;
 use App\Models\Round;
+use App\Models\Score;
 use App\Models\Team;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 
 class EventScoringGrid extends Component
@@ -94,6 +96,38 @@ class EventScoringGrid extends Component
             $lastRound->delete();
             $this->loadGrid();
         }
+    }
+
+    public function saveScore(int $teamId, int $roundId, ?string $value): void
+    {
+        if ($value === null || $value === '') {
+            Score::query()
+                ->where('team_id', $teamId)
+                ->where('round_id', $roundId)
+                ->delete();
+
+            unset($this->scores[$teamId.'-'.$roundId]);
+
+            return;
+        }
+
+        $validator = Validator::make(
+            ['value' => $value],
+            ['value' => ['required', 'numeric', 'min:0', 'max:999.9']],
+        );
+
+        if ($validator->fails()) {
+            $this->addError('score', $validator->errors()->first('value'));
+
+            return;
+        }
+
+        Score::query()->updateOrCreate(
+            ['team_id' => $teamId, 'round_id' => $roundId],
+            ['value' => $value],
+        );
+
+        $this->scores[$teamId.'-'.$roundId] = $value;
     }
 
     public function render(): View
