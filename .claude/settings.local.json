@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git reset --hard 105880d)",
+      "Bash(git push --force)"
+    ]
+  }
+}
