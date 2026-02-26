@@ -1,17 +1,191 @@
-<div>
-    <div class="flex items-center justify-between mb-6">
+<div x-data="{
+    newTeamName: '',
+    newTeamTableNumber: '',
+    navigateDown(row, col, totalRows) {
+        const nextRow = row + 1;
+        if (nextRow >= totalRows) return;
+        const nextInput = this.$root.querySelector(`[data-row='${nextRow}'][data-col='${col}']`);
+        if (nextInput) nextInput.focus();
+    }
+}">
+    {{-- Header --}}
+    <div class="mb-6 flex items-center justify-between">
         <div>
             <flux:heading size="xl">{{ $event->name }}</flux:heading>
-            <flux:subheading>{{ __('Join code:') }} {{ $event->slug }}</flux:subheading>
+            <flux:subheading>{{ __('Join code:') }} <span class="font-mono font-semibold">{{ $event->slug }}</span></flux:subheading>
         </div>
     </div>
 
-    @if ($event->isActive())
-        <flux:subheading>{{ __('Scoring grid will be built in upcoming tasks.') }}</flux:subheading>
-    @else
-        <flux:callout variant="warning">
+    {{-- Ended Event Banner --}}
+    @if (! $event->isActive())
+        <flux:callout variant="warning" class="mb-6">
             <flux:callout.heading>{{ __('Final Scores') }}</flux:callout.heading>
-            <flux:callout.text>{{ __('This event has ended.') }}</flux:callout.text>
+            <flux:callout.text>{{ __('This event has ended. Scores are read-only.') }}</flux:callout.text>
+            <x-slot:actions>
+                <flux:button size="sm" wire:click="reopenEvent">{{ __('Reopen Event') }}</flux:button>
+            </x-slot:actions>
         </flux:callout>
     @endif
+
+    {{-- Control Bar (active event only) --}}
+    @if ($event->isActive())
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+            <flux:modal.trigger name="add-team">
+                <flux:button size="sm" icon="plus">{{ __('Add Team') }}</flux:button>
+            </flux:modal.trigger>
+
+            <flux:button size="sm" icon="plus" wire:click="addRound">{{ __('Add Round') }}</flux:button>
+
+            @if ($rounds->isNotEmpty())
+                <flux:modal.trigger name="confirm-remove-round">
+                    <flux:button size="sm" variant="danger" icon="minus">{{ __('Remove Last Round') }}</flux:button>
+                </flux:modal.trigger>
+            @endif
+
+            <div class="ml-auto">
+                <flux:modal.trigger name="confirm-end-event">
+                    <flux:button size="sm" variant="danger">{{ __('End Event') }}</flux:button>
+                </flux:modal.trigger>
+            </div>
+        </div>
+    @endif
+
+    {{-- Scoring Grid --}}
+    @if ($teams->isNotEmpty())
+        <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
+                        <th class="px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
+                        <th class="w-16 px-3 py-2 text-center font-medium">{{ __('Table') }}</th>
+                        @foreach ($rounds as $round)
+                            <th class="w-20 px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
+                        @endforeach
+                        <th class="w-20 px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
+                        @if ($event->isActive())
+                            <th class="w-10 px-3 py-2"></th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($teams as $rowIndex => $team)
+                        <tr class="border-b border-neutral-100 dark:border-neutral-800" wire:key="team-{{ $team->id }}">
+                            <td class="px-3 py-1 font-medium">{{ $team->displayName() }}</td>
+                            <td class="px-3 py-1 text-center text-neutral-500">{{ $team->table_number }}</td>
+                            @foreach ($rounds as $colIndex => $round)
+                                @php
+                                    $key = $team->id . '-' . $round->id;
+                                    $hasScore = isset($scores[$key]);
+                                @endphp
+                                <td class="px-1 py-1" wire:key="cell-{{ $key }}">
+                                    @if ($event->isActive())
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            value="{{ $scores[$key] ?? '' }}"
+                                            data-row="{{ $rowIndex }}"
+                                            data-col="{{ $colIndex }}"
+                                            class="w-full rounded border px-2 py-1 text-center text-sm transition-colors
+                                                {{ $hasScore
+                                                    ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30'
+                                                    : 'border-neutral-300 bg-white dark:border-neutral-600 dark:bg-neutral-900'
+                                                }}"
+                                            @blur="$wire.saveScore({{ $team->id }}, {{ $round->id }}, $el.value)"
+                                            @keydown.enter.prevent="navigateDown({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }})"
+                                            @keydown.tab.prevent="navigateDown({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }})"
+                                        />
+                                    @else
+                                        <span class="block py-1 text-center {{ $hasScore ? 'font-medium' : 'text-neutral-400' }}">
+                                            {{ $scores[$key] ?? '-' }}
+                                        </span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            <td class="px-3 py-1 text-center font-semibold">
+                                @php
+                                    $total = 0;
+                                    foreach ($rounds as $r) {
+                                        $total += (float) ($scores[$team->id . '-' . $r->id] ?? 0);
+                                    }
+                                @endphp
+                                {{ $total > 0 ? number_format($total, 1) : '-' }}
+                            </td>
+                            @if ($event->isActive())
+                                <td class="px-1 py-1">
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="x-mark"
+                                        wire:click="removeTeam({{ $team->id }})"
+                                        wire:confirm="{{ __('Remove this team? This can be undone.') }}"
+                                    />
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <div class="rounded-lg border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-600">
+            <flux:subheading>{{ __('No teams yet. Add a team to get started.') }}</flux:subheading>
+        </div>
+    @endif
+
+    {{-- Add Team Modal --}}
+    <flux:modal name="add-team" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Add Team') }}</flux:heading>
+                <flux:subheading>{{ __('Enter a team name and/or table number.') }}</flux:subheading>
+            </div>
+
+            <flux:input x-model="newTeamName" :label="__('Team Name')" :placeholder="__('Quizly Bears')" />
+            <flux:input x-model="newTeamTableNumber" type="number" :label="__('Table Number')" :placeholder="__('3')" />
+
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button>{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="primary" x-on:click="
+                    $wire.addTeam(newTeamName || null, newTeamTableNumber ? parseInt(newTeamTableNumber) : null);
+                    newTeamName = '';
+                    newTeamTableNumber = '';
+                    $flux.modal('add-team').close();
+                ">{{ __('Add Team') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- Confirm Remove Last Round Modal --}}
+    <flux:modal name="confirm-remove-round" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Remove Last Round?') }}</flux:heading>
+                <flux:subheading>{{ __('This will delete the last round and all its scores. This cannot be undone.') }}</flux:subheading>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button>{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="removeLastRound" x-on:click="$flux.modal('confirm-remove-round').close()">{{ __('Remove Round') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- Confirm End Event Modal --}}
+    <flux:modal name="confirm-end-event" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('End Event?') }}</flux:heading>
+                <flux:subheading>{{ __('The scoreboard will show final scores and stop updating. You can reopen the event later.') }}</flux:subheading>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button>{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="endEvent" x-on:click="$flux.modal('confirm-end-event').close()">{{ __('End Event') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
