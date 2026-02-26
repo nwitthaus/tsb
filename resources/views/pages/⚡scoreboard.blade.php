@@ -52,13 +52,13 @@ class extends Component {
     #[Computed]
     public function showNameColumn(): bool
     {
-        return $this->event->teams()->whereNotNull('name')->exists();
+        return $this->teams->contains(fn (Team $team) => $team->name !== null);
     }
 
     #[Computed]
     public function showTableColumn(): bool
     {
-        return $this->event->teams()->whereNotNull('table_number')->exists();
+        return $this->teams->contains(fn (Team $team) => $team->table_number !== null);
     }
 }; ?>
 

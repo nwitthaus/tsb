@@ -29,6 +29,7 @@ class EventScoringGrid extends Component
 
     public function mount(Event $event): void
     {
+        $this->authorize('update', $event);
         $this->event = $event;
         $this->loadGrid();
     }
@@ -49,8 +50,26 @@ class EventScoringGrid extends Component
 
     public function addTeam(?string $name, ?int $tableNumber): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         if (! $name && ! $tableNumber) {
             $this->addError('team', 'A team must have at least a name or table number.');
+
+            return;
+        }
+
+        $validator = Validator::make(
+            ['name' => $name, 'table_number' => $tableNumber],
+            [
+                'name' => ['nullable', 'string', 'max:255'],
+                'table_number' => ['nullable', 'integer', 'min:1'],
+            ],
+        );
+
+        if ($validator->fails()) {
+            $this->addError('team', $validator->errors()->first());
 
             return;
         }
@@ -68,6 +87,10 @@ class EventScoringGrid extends Component
 
     public function removeTeam(int $teamId): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $team = $this->event->teams()->findOrFail($teamId);
         $team->delete();
         $this->loadGrid();
@@ -75,6 +98,10 @@ class EventScoringGrid extends Component
 
     public function restoreTeam(int $teamId): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $team = $this->event->teams()->withTrashed()->findOrFail($teamId);
         $team->restore();
         $this->loadGrid();
@@ -82,6 +109,10 @@ class EventScoringGrid extends Component
 
     public function reorderTeams(string $order): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $teams = match ($order) {
             'alphabetical' => $this->event->teams()->reorder()->orderBy('name')->get(),
             'table_number' => $this->event->teams()->reorder()->orderBy('table_number')->get(),
@@ -97,6 +128,10 @@ class EventScoringGrid extends Component
 
     public function addRound(): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $maxSortOrder = $this->event->rounds()->max('sort_order') ?? 0;
 
         $this->event->rounds()->create([
@@ -108,6 +143,10 @@ class EventScoringGrid extends Component
 
     public function removeLastRound(): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $lastRound = $this->event->rounds()->reorder()->orderByDesc('sort_order')->first();
 
         if ($lastRound) {
@@ -118,6 +157,15 @@ class EventScoringGrid extends Component
 
     public function saveScore(int $teamId, int $roundId, ?string $value): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
+        if (! $this->event->teams()->where('id', $teamId)->exists()
+            || ! $this->event->rounds()->where('id', $roundId)->exists()) {
+            return;
+        }
+
         if ($value === null || $value === '') {
             Score::query()
                 ->where('team_id', $teamId)
@@ -150,6 +198,10 @@ class EventScoringGrid extends Component
 
     public function endEvent(): void
     {
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $this->event->update(['ended_at' => now()]);
         $this->event->refresh();
     }

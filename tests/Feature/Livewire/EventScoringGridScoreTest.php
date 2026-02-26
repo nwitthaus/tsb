@@ -83,3 +83,44 @@ test('score must be numeric', function () {
         ->call('saveScore', $team->id, $round->id, 'abc')
         ->assertHasErrors();
 });
+
+test('cannot save score for team not in this event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    $otherEvent = Event::factory()->create(['user_id' => $user->id, 'ended_at' => now()]);
+    $otherTeam = Team::factory()->create(['event_id' => $otherEvent->id]);
+    $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->call('saveScore', $otherTeam->id, $round->id, '5');
+
+    expect(Score::count())->toBe(0);
+});
+
+test('cannot save score for round not in this event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    $otherEvent = Event::factory()->create(['user_id' => $user->id, 'ended_at' => now()]);
+    $team = Team::factory()->create(['event_id' => $event->id]);
+    $otherRound = Round::factory()->create(['event_id' => $otherEvent->id, 'sort_order' => 1]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->call('saveScore', $team->id, $otherRound->id, '5');
+
+    expect(Score::count())->toBe(0);
+});
+
+test('cannot save score on ended event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->ended()->create(['user_id' => $user->id]);
+    $team = Team::factory()->create(['event_id' => $event->id]);
+    $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->call('saveScore', $team->id, $round->id, '5');
+
+    expect(Score::count())->toBe(0);
+});

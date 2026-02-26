@@ -10,6 +10,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('events/{event}', 'pages::events.show')->name('events.show');
 });
 
-Route::livewire('{slug}', 'pages::scoreboard')->name('scoreboard');
+Route::livewire('{slug}', 'pages::scoreboard')->name('scoreboard')->middleware('throttle:60,1');
 
 require __DIR__.'/settings.php';
