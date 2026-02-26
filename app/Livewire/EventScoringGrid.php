@@ -130,6 +130,29 @@ class EventScoringGrid extends Component
         $this->scores[$teamId.'-'.$roundId] = $value;
     }
 
+    public function endEvent(): void
+    {
+        $this->event->update(['ended_at' => now()]);
+        $this->event->refresh();
+    }
+
+    public function reopenEvent(): void
+    {
+        $hasActiveEvent = $this->event->user->events()
+            ->where('id', '!=', $this->event->id)
+            ->whereNull('ended_at')
+            ->exists();
+
+        if ($hasActiveEvent) {
+            $this->addError('event', 'You already have an active event. End it first before reopening this one.');
+
+            return;
+        }
+
+        $this->event->update(['ended_at' => null]);
+        $this->event->refresh();
+    }
+
     public function render(): View
     {
         return view('livewire.event-scoring-grid');

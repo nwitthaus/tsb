@@ -15,7 +15,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Livewire\\EventScoringGrid\:\:addError\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
+			path: app/Livewire/EventScoringGrid.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\User\:\:events\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: app/Livewire/EventScoringGrid.php
 
 		-
