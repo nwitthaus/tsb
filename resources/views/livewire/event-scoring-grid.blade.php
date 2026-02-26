@@ -42,6 +42,11 @@
                 </flux:modal.trigger>
             @endif
 
+            @if ($teams->count() > 1)
+                <flux:button size="sm" variant="ghost" wire:click="reorderTeams('alphabetical')">{{ __('Sort A-Z') }}</flux:button>
+                <flux:button size="sm" variant="ghost" wire:click="reorderTeams('table_number')">{{ __('Sort by Table') }}</flux:button>
+            @endif
+
             <div class="ml-auto">
                 <flux:modal.trigger name="confirm-end-event">
                     <flux:button size="sm" variant="danger">{{ __('End Event') }}</flux:button>

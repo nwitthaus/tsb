@@ -77,6 +77,21 @@ class EventScoringGrid extends Component
         $this->loadGrid();
     }
 
+    public function reorderTeams(string $order): void
+    {
+        $teams = match ($order) {
+            'alphabetical' => $this->event->teams()->reorder()->orderBy('name')->get(),
+            'table_number' => $this->event->teams()->reorder()->orderBy('table_number')->get(),
+            default => $this->event->teams,
+        };
+
+        $teams->each(function (Team $team, int $index): void {
+            $team->update(['sort_order' => $index + 1]);
+        });
+
+        $this->loadGrid();
+    }
+
     public function addRound(): void
     {
         $maxSortOrder = $this->event->rounds()->max('sort_order') ?? 0;

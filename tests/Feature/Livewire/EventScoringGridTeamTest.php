@@ -76,3 +76,31 @@ test('host can restore a soft deleted team', function () {
 
     expect($team->fresh()->trashed())->toBeFalse();
 });
+
+test('host can reorder teams alphabetically', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    Team::factory()->create(['event_id' => $event->id, 'name' => 'Zebras', 'sort_order' => 1]);
+    Team::factory()->create(['event_id' => $event->id, 'name' => 'Alphas', 'sort_order' => 2]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->call('reorderTeams', 'alphabetical');
+
+    $names = $event->teams()->pluck('name')->all();
+    expect($names)->toBe(['Alphas', 'Zebras']);
+});
+
+test('host can reorder teams by table number', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    Team::factory()->create(['event_id' => $event->id, 'table_number' => 10, 'sort_order' => 1]);
+    Team::factory()->create(['event_id' => $event->id, 'table_number' => 2, 'sort_order' => 2]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('event-scoring-grid', ['event' => $event])
+        ->call('reorderTeams', 'table_number');
+
+    $tables = $event->teams()->pluck('table_number')->all();
+    expect($tables)->toBe([2, 10]);
+});
