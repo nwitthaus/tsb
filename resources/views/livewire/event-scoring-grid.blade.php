@@ -1,10 +1,10 @@
 <div x-data="{
     newTeamName: '',
     newTeamTableNumber: '',
-    navigateDown(row, col, totalRows) {
-        const nextRow = row + 1;
-        if (nextRow >= totalRows) return;
-        const nextInput = this.$root.querySelector(`[data-row='${nextRow}'][data-col='${col}']`);
+    move(row, col, totalRows, totalCols, dRow, dCol) {
+        const nextRow = (row + dRow + totalRows) % totalRows;
+        const nextCol = (col + dCol + totalCols) % totalCols;
+        const nextInput = this.$root.querySelector(`[data-row='${nextRow}'][data-col='${nextCol}']`);
         if (nextInput) nextInput.focus();
     }
 }">
@@ -84,15 +84,15 @@
     {{-- Scoring Grid --}}
     @if ($teams->isNotEmpty())
         <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
-            <table class="w-full text-sm">
+            <table class="w-full table-fixed text-sm">
                 <thead>
                     <tr class="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
-                        <th class="px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
+                        <th class="w-1/4 px-3 py-2 text-left font-medium">{{ __('Team') }}</th>
                         <th class="w-16 px-3 py-2 text-center font-medium">{{ __('Table') }}</th>
                         @foreach ($rounds as $round)
-                            <th class="w-20 px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
+                            <th class="px-3 py-2 text-center font-medium">R{{ $round->sort_order }}</th>
                         @endforeach
-                        <th class="w-20 px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
+                        <th class="px-3 py-2 text-center font-medium">{{ __('Total') }}</th>
                         @if ($event->isActive())
                             <th class="w-10 px-3 py-2"></th>
                         @endif
@@ -101,7 +101,7 @@
                 <tbody>
                     @foreach ($teams as $rowIndex => $team)
                         <tr class="border-b border-neutral-100 dark:border-neutral-800" wire:key="team-{{ $team->id }}">
-                            <td class="px-3 py-1 font-medium">{{ $team->displayName() }}</td>
+                            <td class="truncate px-3 py-1 font-medium">{{ $team->displayName() }}</td>
                             <td class="px-3 py-1 text-center text-neutral-500">{{ $team->table_number }}</td>
                             @foreach ($rounds as $colIndex => $round)
                                 @php
@@ -122,8 +122,12 @@
                                                     : 'border-neutral-300 bg-white dark:border-neutral-600 dark:bg-neutral-900'
                                                 }}"
                                             @blur="$wire.saveScore({{ $team->id }}, {{ $round->id }}, $el.value)"
-                                            @keydown.enter.prevent="navigateDown({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }})"
-                                            @keydown.tab.prevent="navigateDown({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }})"
+                                            @keydown.enter.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, 1, 0)"
+                                            @keydown.tab.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, $event.shiftKey ? -1 : 1, 0)"
+                                            @keydown.up.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, -1, 0)"
+                                            @keydown.down.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, 1, 0)"
+                                            @keydown.left.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, 0, -1)"
+                                            @keydown.right.prevent="move({{ $rowIndex }}, {{ $colIndex }}, {{ $teams->count() }}, {{ $rounds->count() }}, 0, 1)"
                                         />
                                     @else
                                         <span class="block py-1 text-center {{ $hasScore ? 'font-medium' : 'text-neutral-400' }}">
