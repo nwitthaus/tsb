@@ -75,6 +75,27 @@ class EventScoringGrid extends Component
         $this->loadGrid();
     }
 
+    public function addRound(): void
+    {
+        $maxSortOrder = $this->event->rounds()->max('sort_order') ?? 0;
+
+        $this->event->rounds()->create([
+            'sort_order' => $maxSortOrder + 1,
+        ]);
+
+        $this->loadGrid();
+    }
+
+    public function removeLastRound(): void
+    {
+        $lastRound = $this->event->rounds()->reorder()->orderByDesc('sort_order')->first();
+
+        if ($lastRound) {
+            $lastRound->delete();
+            $this->loadGrid();
+        }
+    }
+
     public function render(): View
     {
         return view('livewire.event-scoring-grid');

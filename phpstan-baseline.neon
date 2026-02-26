@@ -19,6 +19,12 @@ parameters:
 			path: app/Livewire/EventScoringGrid.php
 
 		-
+			message: '#^Call to an undefined method App\\Models\\Event\:\:rounds\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Livewire/EventScoringGrid.php
+
+		-
 			message: '#^Call to an undefined method App\\Models\\Event\:\:teams\(\)\.$#'
 			identifier: method.notFound
 			count: 5
