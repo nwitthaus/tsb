@@ -122,11 +122,11 @@ class extends Component {
                                     $score = $team->scores->firstWhere('round_id', $round->id);
                                 @endphp
                                 <td class="px-3 py-2 text-center">
-                                    {{ $score ? number_format((float) $score->value, 1) : '-' }}
+                                    {{ $score ? (fmod((float) $score->value, 1) ? number_format((float) $score->value, 1) : (int) $score->value) : '-' }}
                                 </td>
                             @endforeach
                             <td class="px-3 py-2 text-center font-bold">
-                                {{ $currentTotal > 0 ? number_format($currentTotal, 1) : '0.0' }}
+                                {{ fmod($currentTotal, 1) ? number_format($currentTotal, 1) : (int) $currentTotal }}
                             </td>
                         </tr>
                     @endforeach
