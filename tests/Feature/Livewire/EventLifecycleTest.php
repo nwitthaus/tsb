@@ -35,10 +35,10 @@ test('can reopen event even if user has another active event', function () {
 });
 
 test('ended event shows read-only grid', function () {
-    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now(), 'name' => 'Past Trivia']);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['ended_at' => now(), 'name' => 'Past Trivia']);
 
     $this->actingAs($user)
-        ->get(route('events.scoring', $event))
+        ->get(route('organizations.events.scoring', [$organization, $event]))
         ->assertOk()
         ->assertSee('Past Trivia')
         ->assertSee('Reopen');
