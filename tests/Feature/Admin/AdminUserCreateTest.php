@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\OrganizationRole;
+use App\Models\Organization;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -90,4 +92,51 @@ test('create user validates password confirmation', function () {
         ->set('password_confirmation', 'different123')
         ->call('save')
         ->assertHasErrors('password');
+});
+
+test('admin can create a user and assign to an organization', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $org = Organization::factory()->create(['name' => 'Trivia Co']);
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.create')
+        ->set('name', 'Org User')
+        ->set('email', 'orguser@example.com')
+        ->set('password', 'password123')
+        ->set('password_confirmation', 'password123')
+        ->set('organization_id', $org->id)
+        ->set('organization_role', 'owner')
+        ->call('save')
+        ->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseHas('users', ['email' => 'orguser@example.com']);
+    $this->assertDatabaseHas('organization_user', [
+        'organization_id' => $org->id,
+        'role' => OrganizationRole::Owner->value,
+    ]);
+});
+
+test('admin can create a user without an organization', function () {
+    $admin = User::factory()->superAdmin()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.create')
+        ->set('name', 'Solo User')
+        ->set('email', 'solo@example.com')
+        ->set('password', 'password123')
+        ->set('password_confirmation', 'password123')
+        ->call('save')
+        ->assertRedirect(route('admin.users.index'));
+
+    $user = User::where('email', 'solo@example.com')->first();
+    expect($user->organizations)->toBeEmpty();
+});
+
+test('create user shows organization dropdown', function () {
+    $admin = User::factory()->superAdmin()->create();
+    Organization::factory()->create(['name' => 'Trivia Co']);
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.create')
+        ->assertSee('Trivia Co');
 });

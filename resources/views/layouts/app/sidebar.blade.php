@@ -25,6 +25,9 @@
                         <flux:sidebar.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>
                             {{ __('Users') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="building-office" :href="route('admin.organizations.index')" :current="request()->routeIs('admin.organizations.*')" wire:navigate>
+                            {{ __('Organizations') }}
+                        </flux:sidebar.item>
                         <flux:sidebar.item icon="calendar" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.*')" wire:navigate>
                             {{ __('Events') }}
                         </flux:sidebar.item>

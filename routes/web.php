@@ -27,6 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::livewire('users', 'pages::admin.users.index')->name('admin.users.index');
         Route::livewire('users/create', 'pages::admin.users.create')->name('admin.users.create');
         Route::livewire('users/{user}', 'pages::admin.users.edit')->name('admin.users.edit');
+        Route::livewire('organizations', 'pages::admin.organizations.index')->name('admin.organizations.index');
+        Route::livewire('organizations/create', 'pages::admin.organizations.create')->name('admin.organizations.create');
+        Route::livewire('organizations/{organization}', 'pages::admin.organizations.edit')->name('admin.organizations.edit');
         Route::livewire('events', 'pages::admin.events.index')->name('admin.events.index');
         Route::livewire('events/create', 'pages::admin.events.create')->name('admin.events.create');
         Route::livewire('events/{event}', 'pages::admin.events.edit')->name('admin.events.edit');
