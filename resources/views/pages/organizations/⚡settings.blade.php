@@ -148,158 +148,171 @@ new #[Title('Organization Settings')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-lg space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Organization Settings') }}</flux:heading>
-        <flux:subheading>
-            <flux:link :href="route('organizations.show', $organization)" wire:navigate>{{ $organization->name }}</flux:link>
-        </flux:subheading>
-    </div>
-
-    <form wire:submit="save" class="space-y-6">
-        <flux:input
-            wire:model="name"
-            :label="__('Organization Name')"
-            required
-            autofocus
+<div class="max-w-3xl space-y-6">
+    {{-- Header --}}
+    <div class="flex items-center gap-3">
+        <flux:button
+            variant="ghost"
+            icon="arrow-left"
+            :href="route('organizations.show', $organization)"
+            wire:navigate
         />
-
-        <flux:input
-            wire:model="slug"
-            :label="__('URL Slug')"
-            required
-        />
-
-        <div class="flex justify-end">
-            <flux:button variant="primary" type="submit">
-                {{ __('Save Changes') }}
-            </flux:button>
+        <div>
+            <flux:heading size="xl">{{ $organization->name }}</flux:heading>
+            <flux:subheading>{{ __('Organization Settings') }}</flux:subheading>
         </div>
-    </form>
-
-    <flux:separator />
-
-    <div class="space-y-4">
-        <flux:heading size="lg">{{ __('Members') }}</flux:heading>
-
-        <flux:table>
-            <flux:table.columns>
-                <flux:table.column>{{ __('Name') }}</flux:table.column>
-                <flux:table.column>{{ __('Email') }}</flux:table.column>
-                <flux:table.column>{{ __('Role') }}</flux:table.column>
-                <flux:table.column></flux:table.column>
-            </flux:table.columns>
-            <flux:table.rows>
-                @foreach ($this->members as $member)
-                    <flux:table.row :key="$member->id">
-                        <flux:table.cell>{{ $member->name }}</flux:table.cell>
-                        <flux:table.cell>{{ $member->email }}</flux:table.cell>
-                        <flux:table.cell>
-                            <flux:badge size="sm" :color="$member->pivot->role === 'owner' ? 'amber' : 'zinc'">
-                                {{ ucfirst($member->pivot->role) }}
-                            </flux:badge>
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            @if ($member->id !== auth()->id())
-                                <flux:button
-                                    size="sm"
-                                    variant="ghost"
-                                    icon="trash"
-                                    wire:click="removeMember({{ $member->id }})"
-                                    wire:confirm="{{ __('Remove this member from the organization?') }}"
-                                />
-                            @endif
-                        </flux:table.cell>
-                    </flux:table.row>
-                @endforeach
-            </flux:table.rows>
-        </flux:table>
     </div>
 
-    <flux:separator />
-
-    <div class="space-y-4">
-        <flux:heading size="lg">{{ __('Invite Member') }}</flux:heading>
-
-        <form wire:submit="invite" class="space-y-4">
-            <flux:input
-                wire:model="inviteEmail"
-                type="email"
-                :label="__('Email Address')"
-                :placeholder="__('colleague@example.com')"
-                required
-            />
-
-            <flux:select wire:model="inviteRole" :label="__('Role')">
-                <flux:select.option value="owner">{{ __('Owner') }}</flux:select.option>
-                <flux:select.option value="scorekeeper">{{ __('Scorekeeper') }}</flux:select.option>
-            </flux:select>
-
-            <div class="flex justify-end">
-                <flux:button variant="primary" type="submit">
-                    {{ __('Send Invitation') }}
+    {{-- General --}}
+    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <flux:heading size="lg">{{ __('General') }}</flux:heading>
+            <flux:subheading>{{ __('Manage your organization\'s name and URL slug.') }}</flux:subheading>
+        </div>
+        <div class="bg-white p-5 dark:bg-zinc-900">
+            <form wire:submit="save" class="flex flex-col items-end gap-3 sm:flex-row">
+                <div class="w-full flex-1">
+                    <flux:input
+                        wire:model="name"
+                        :label="__('Organization Name')"
+                        required
+                        autofocus
+                    />
+                </div>
+                <div class="w-full flex-1">
+                    <flux:input
+                        wire:model="slug"
+                        :label="__('URL Slug')"
+                        required
+                    />
+                </div>
+                <flux:button variant="primary" type="submit" class="shrink-0 max-sm:w-full sm:mb-px">
+                    {{ __('Save') }}
                 </flux:button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
-    @if ($this->pendingInvitations->isNotEmpty())
-        <flux:separator />
-
-        <div class="space-y-4">
-            <flux:heading size="lg">{{ __('Pending Invitations') }}</flux:heading>
-
+    {{-- Members --}}
+    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div class="flex items-center gap-2">
+                <flux:heading size="lg">{{ __('Members') }}</flux:heading>
+                <flux:badge size="sm" color="zinc">{{ $this->members->count() }}</flux:badge>
+            </div>
+            <flux:subheading>{{ __('People who belong to this organization.') }}</flux:subheading>
+        </div>
+        <div class="bg-white p-5 dark:bg-zinc-900">
             <flux:table>
                 <flux:table.columns>
+                    <flux:table.column>{{ __('Name') }}</flux:table.column>
                     <flux:table.column>{{ __('Email') }}</flux:table.column>
                     <flux:table.column>{{ __('Role') }}</flux:table.column>
-                    <flux:table.column>{{ __('Invited By') }}</flux:table.column>
                     <flux:table.column></flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
-                    @foreach ($this->pendingInvitations as $invitation)
-                        <flux:table.row :key="$invitation->id">
-                            <flux:table.cell>{{ $invitation->email }}</flux:table.cell>
+                    @foreach ($this->members as $member)
+                        <flux:table.row :key="$member->id">
+                            <flux:table.cell>{{ $member->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $member->email }}</flux:table.cell>
                             <flux:table.cell>
-                                <flux:badge size="sm" :color="$invitation->role === 'owner' ? 'amber' : 'zinc'">
-                                    {{ ucfirst($invitation->role) }}
+                                <flux:badge size="sm" :color="$member->pivot->role === 'owner' ? 'amber' : 'zinc'">
+                                    {{ ucfirst($member->pivot->role) }}
                                 </flux:badge>
                             </flux:table.cell>
-                            <flux:table.cell>{{ $invitation->inviter->name }}</flux:table.cell>
                             <flux:table.cell>
-                                <flux:button
-                                    size="sm"
-                                    variant="ghost"
-                                    icon="x-mark"
-                                    wire:click="cancelInvitation({{ $invitation->id }})"
-                                    wire:confirm="{{ __('Cancel this invitation?') }}"
-                                />
+                                @if ($member->id !== auth()->id())
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="x-mark"
+                                        wire:click="removeMember({{ $member->id }})"
+                                        wire:confirm="{{ __('Remove this member from the organization?') }}"
+                                    />
+                                @endif
                             </flux:table.cell>
                         </flux:table.row>
                     @endforeach
                 </flux:table.rows>
             </flux:table>
         </div>
-    @endif
+    </div>
 
-    <flux:separator />
-
-    <div class="space-y-3">
-        <flux:heading size="lg">{{ __('Danger Zone') }}</flux:heading>
-        <flux:card class="border-red-200 dark:border-red-800">
-            <div class="flex items-center justify-between">
-                <div>
-                    <flux:heading>{{ __('Delete Organization') }}</flux:heading>
-                    <flux:subheading>{{ __('Permanently delete this organization and all its events.') }}</flux:subheading>
+    {{-- Invite Member --}}
+    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <flux:heading size="lg">{{ __('Invite Member') }}</flux:heading>
+            <flux:subheading>{{ __('Send an invitation to add someone to this organization.') }}</flux:subheading>
+        </div>
+        <div class="bg-white p-5 dark:bg-zinc-900">
+            <form wire:submit="invite" class="flex flex-col items-end gap-3 sm:flex-row">
+                <div class="w-full flex-1">
+                    <flux:input
+                        wire:model="inviteEmail"
+                        type="email"
+                        :label="__('Email Address')"
+                        :placeholder="__('colleague@example.com')"
+                        required
+                    />
                 </div>
-                <flux:button
-                    variant="danger"
-                    wire:click="deleteOrganization"
-                    wire:confirm="{{ __('Delete this organization? This will permanently remove the organization, all events, teams, rounds, and scores. This cannot be undone.') }}"
-                >
-                    {{ __('Delete') }}
+                <div class="w-full sm:w-44">
+                    <flux:select wire:model="inviteRole" :label="__('Role')">
+                        <flux:select.option value="scorekeeper">{{ __('Scorekeeper') }}</flux:select.option>
+                        <flux:select.option value="owner">{{ __('Owner') }}</flux:select.option>
+                    </flux:select>
+                </div>
+                <flux:button variant="primary" type="submit" class="shrink-0 max-sm:w-full sm:mb-px">
+                    {{ __('Invite') }}
                 </flux:button>
+            </form>
+
+            @if ($this->pendingInvitations->isNotEmpty())
+                <div class="mt-4 border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                    <flux:text class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">{{ __('Pending') }}</flux:text>
+                    @foreach ($this->pendingInvitations as $invitation)
+                        <div class="flex items-center justify-between py-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <flux:icon.clock variant="mini" class="text-amber-500" />
+                                <flux:text>{{ $invitation->email }}</flux:text>
+                                <flux:badge size="sm" :color="$invitation->role === 'owner' ? 'amber' : 'zinc'">
+                                    {{ ucfirst($invitation->role) }}
+                                </flux:badge>
+                                <flux:text class="text-xs">{{ __('via :name', ['name' => $invitation->inviter->name]) }}</flux:text>
+                            </div>
+                            <flux:button
+                                size="sm"
+                                variant="ghost"
+                                icon="x-mark"
+                                wire:click="cancelInvitation({{ $invitation->id }})"
+                                wire:confirm="{{ __('Cancel this invitation?') }}"
+                            />
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Danger Zone --}}
+    <div class="overflow-hidden rounded-lg border border-red-200 dark:border-red-900">
+        <div class="border-b border-red-200 bg-red-50 px-5 py-4 dark:border-red-900 dark:bg-red-950/30">
+            <flux:heading size="lg" class="!text-red-700 dark:!text-red-400">{{ __('Danger Zone') }}</flux:heading>
+            <flux:subheading class="!text-red-500/80">{{ __('Irreversible actions that affect this organization.') }}</flux:subheading>
+        </div>
+        <div class="flex flex-col items-start justify-between gap-3 bg-white p-5 sm:flex-row sm:items-center dark:bg-zinc-900">
+            <div>
+                <flux:heading>{{ __('Delete Organization') }}</flux:heading>
+                <flux:subheading>{{ __('Permanently remove organization, events, teams, and scores.') }}</flux:subheading>
             </div>
-        </flux:card>
+            <flux:button
+                variant="danger"
+                size="sm"
+                class="shrink-0"
+                wire:click="deleteOrganization"
+                wire:confirm="{{ __('Delete this organization? This will permanently remove the organization, all events, teams, rounds, and scores. This cannot be undone.') }}"
+            >
+                {{ __('Delete') }}
+            </flux:button>
+        </div>
     </div>
 </div>

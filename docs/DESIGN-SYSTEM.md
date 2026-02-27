@@ -317,3 +317,89 @@ Defined in `resources/css/app.css`:
 **Theme tokens:** `resources/css/app.css` — `@theme` block defines font families and zinc color scale.
 
 **Flux accent colors:** `--color-accent` maps to `neutral-800` (light) / `white` (dark). This controls Flux component accent colors and should not be overridden per-page.
+
+---
+
+## 10. Admin Settings Pattern — Sectioned Cards
+
+Use this pattern for admin settings and configuration pages. Each logical group is a standalone bordered card with a tinted header bar and white content area, inspired by Laravel Forge's settings UI.
+
+**Reference implementation:** `resources/views/pages/organizations/⚡settings.blade.php`
+
+### Structure
+
+```
+┌─ Header (bg-zinc-50) ─────────────────────┐
+│ Heading                                     │
+│ Description                                 │
+├─────────────────────────────────────────────┤
+│ Content (bg-white)                          │
+│ Form fields / table / list                  │
+└─────────────────────────────────────────────┘
+```
+
+Each section is a separate card. Cards are stacked vertically with `space-y-6` between them.
+
+### Card shell
+
+```html
+<div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+    {{-- Tinted header --}}
+    <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <flux:heading size="lg">Section Title</flux:heading>
+        <flux:subheading>Short description of what this section controls.</flux:subheading>
+    </div>
+    {{-- White content area --}}
+    <div class="bg-white p-5 dark:bg-zinc-900">
+        {{-- Form fields, tables, etc. --}}
+    </div>
+</div>
+```
+
+### Inline form row
+
+Place label, input(s), and submit button on a single horizontal line. Stacks vertically on mobile.
+
+```html
+<form wire:submit="save" class="flex flex-col items-end gap-3 sm:flex-row">
+    <div class="w-full flex-1">
+        <flux:input wire:model="name" :label="__('Name')" required />
+    </div>
+    <div class="w-full flex-1">
+        <flux:input wire:model="slug" :label="__('Slug')" required />
+    </div>
+    <flux:button variant="primary" type="submit" class="shrink-0 max-sm:w-full sm:mb-px">
+        {{ __('Save') }}
+    </flux:button>
+</form>
+```
+
+### Danger zone card
+
+Uses red border and red-tinted header to signal destructive actions.
+
+```html
+<div class="overflow-hidden rounded-lg border border-red-200 dark:border-red-900">
+    <div class="border-b border-red-200 bg-red-50 px-5 py-4 dark:border-red-900 dark:bg-red-950/30">
+        <flux:heading size="lg" class="!text-red-700 dark:!text-red-400">Danger Zone</flux:heading>
+        <flux:subheading class="!text-red-500/80">Irreversible actions.</flux:subheading>
+    </div>
+    <div class="flex items-center justify-between bg-white p-5 dark:bg-zinc-900">
+        <div>
+            <flux:heading>Delete Something</flux:heading>
+            <flux:subheading>Permanent description.</flux:subheading>
+        </div>
+        <flux:button variant="danger" size="sm" wire:click="delete" wire:confirm="Are you sure?">
+            {{ __('Delete') }}
+        </flux:button>
+    </div>
+</div>
+```
+
+### Guidelines
+
+- **Max width:** `max-w-3xl` for settings pages.
+- **Back navigation:** Use a ghost arrow-left button linking to the parent page.
+- **Section count badge:** Place a `<flux:badge size="sm" color="zinc">` next to headings that summarize a count (e.g., Members).
+- **Pending/inline items:** Show below the form within the same card, separated by `border-t border-zinc-200 mt-4 pt-3`.
+- **Tables inside cards:** Wrap in `<div class="bg-white p-5 dark:bg-zinc-900">` so table content aligns with other card content.
