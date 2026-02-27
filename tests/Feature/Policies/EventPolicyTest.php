@@ -1,66 +1,97 @@
 <?php
 
+use App\Enums\OrganizationRole;
 use App\Models\Event;
+use App\Models\Organization;
 use App\Models\User;
 
-test('owner can view their event', function () {
+test('org owner can view event', function () {
     $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     expect($user->can('view', $event))->toBeTrue();
 });
 
-test('non-owner cannot view event', function () {
-    $event = Event::factory()->create();
-    $otherUser = User::factory()->create();
-
-    expect($otherUser->can('view', $event))->toBeFalse();
-});
-
-test('user can create event when they have no active events', function () {
+test('org owner can update event', function () {
     $user = User::factory()->create();
-
-    expect($user->can('create', Event::class))->toBeTrue();
-});
-
-test('user can create event when they already have an active event', function () {
-    $user = User::factory()->create();
-    Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);
-
-    expect($user->can('create', Event::class))->toBeTrue();
-});
-
-test('owner can update their event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     expect($user->can('update', $event))->toBeTrue();
 });
 
-test('non-owner cannot update event', function () {
-    $event = Event::factory()->create();
-    $otherUser = User::factory()->create();
+test('org owner can delete event', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
 
-    expect($otherUser->can('update', $event))->toBeFalse();
+    expect($user->can('delete', $event))->toBeTrue();
 });
 
-test('super admin can view any event', function () {
+test('org scorekeeper can view event', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
+
+    expect($user->can('view', $event))->toBeTrue();
+});
+
+test('org scorekeeper cannot update event', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
+
+    expect($user->can('update', $event))->toBeFalse();
+});
+
+test('org scorekeeper cannot delete event', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    $event = Event::factory()->create(['organization_id' => $organization->id]);
+
+    expect($user->can('delete', $event))->toBeFalse();
+});
+
+test('non-member cannot view event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+
+    expect($user->can('view', $event))->toBeFalse();
+});
+
+test('non-member cannot update event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+
+    expect($user->can('update', $event))->toBeFalse();
+});
+
+test('non-member cannot delete event', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+
+    expect($user->can('delete', $event))->toBeFalse();
+});
+
+test('any authenticated user can create event', function () {
+    $user = User::factory()->create();
+
+    expect($user->can('create', Event::class))->toBeTrue();
+});
+
+test('super admin bypasses all checks', function () {
     $admin = User::factory()->superAdmin()->create();
     $event = Event::factory()->create();
 
-    expect($admin->can('view', $event))->toBeTrue();
-});
-
-test('super admin can update any event', function () {
-    $admin = User::factory()->superAdmin()->create();
-    $event = Event::factory()->create();
-
-    expect($admin->can('update', $event))->toBeTrue();
-});
-
-test('super admin can delete any event', function () {
-    $admin = User::factory()->superAdmin()->create();
-    $event = Event::factory()->create();
-
-    expect($admin->can('delete', $event))->toBeTrue();
+    expect($admin->can('view', $event))->toBeTrue()
+        ->and($admin->can('update', $event))->toBeTrue()
+        ->and($admin->can('delete', $event))->toBeTrue()
+        ->and($admin->can('create', Event::class))->toBeTrue();
 });

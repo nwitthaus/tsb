@@ -4,8 +4,7 @@ use App\Models\Event;
 use App\Models\User;
 
 test('show page loads and displays event details form', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'name' => 'Tuesday Trivia']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
 
     $this->actingAs($user)
         ->get(route('events.show', $event))
@@ -17,8 +16,7 @@ test('show page loads and displays event details form', function () {
 });
 
 test('can update event name', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'name' => 'Old Name']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['name' => 'Old Name']);
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -30,8 +28,7 @@ test('can update event name', function () {
 });
 
 test('can update event slug', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'slug' => 'old-slug']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['slug' => 'old-slug']);
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -43,8 +40,7 @@ test('can update event slug', function () {
 });
 
 test('can update event start time', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -56,9 +52,8 @@ test('can update event start time', function () {
 });
 
 test('slug must be unique across events', function () {
-    $user = User::factory()->create();
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-slug']);
     Event::factory()->create(['slug' => 'taken-slug']);
-    $event = Event::factory()->create(['user_id' => $user->id, 'slug' => 'my-slug']);
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -68,8 +63,7 @@ test('slug must be unique across events', function () {
 });
 
 test('slug allows keeping same slug on own event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'slug' => 'my-slug']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-slug']);
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -79,8 +73,7 @@ test('slug allows keeping same slug on own event', function () {
 });
 
 test('slug rejects invalid format', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('pages::events.show', ['event' => $event])
@@ -90,9 +83,8 @@ test('slug rejects invalid format', function () {
 });
 
 test('unauthorized user cannot view event details', function () {
-    $owner = User::factory()->create();
+    ['event' => $event] = createOwnerWithEvent();
     $other = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $owner->id]);
 
     $this->actingAs($other)
         ->get(route('events.show', $event))
@@ -100,8 +92,7 @@ test('unauthorized user cannot view event details', function () {
 });
 
 test('show page displays scoreboard QR section', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'slug' => 'my-trivia']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-trivia']);
 
     $this->actingAs($user)
         ->get(route('events.show', $event))
@@ -111,8 +102,7 @@ test('show page displays scoreboard QR section', function () {
 });
 
 test('scoring page loads and renders scoring grid', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     $this->actingAs($user)
         ->get(route('events.scoring', $event))
@@ -121,9 +111,8 @@ test('scoring page loads and renders scoring grid', function () {
 });
 
 test('unauthorized user cannot view scoring page', function () {
-    $owner = User::factory()->create();
+    ['event' => $event] = createOwnerWithEvent();
     $other = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $owner->id]);
 
     $this->actingAs($other)
         ->get(route('events.scoring', $event))

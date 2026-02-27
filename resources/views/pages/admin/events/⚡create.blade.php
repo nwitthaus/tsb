@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Event;
-use App\Models\User;
+use App\Models\Organization;
 use Flux\Flux;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
@@ -12,7 +12,7 @@ new #[Title('Create Event')] class extends Component {
 
     public string $starts_at = '';
 
-    public ?int $user_id = null;
+    public ?int $organization_id = null;
 
     public ?int $tables = null;
 
@@ -26,17 +26,17 @@ new #[Title('Create Event')] class extends Component {
         return [
             'name' => 'required|string|max:255',
             'starts_at' => 'required|date',
-            'user_id' => 'required|exists:users,id',
+            'organization_id' => 'required|exists:organizations,id',
             'tables' => 'nullable|integer|min:1|max:200',
             'rounds' => 'nullable|integer|min:1|max:50',
         ];
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, User> */
+    /** @return \Illuminate\Database\Eloquent\Collection<int, Organization> */
     #[Computed]
-    public function users(): \Illuminate\Database\Eloquent\Collection
+    public function organizations(): \Illuminate\Database\Eloquent\Collection
     {
-        return User::query()->orderBy('name')->get(['id', 'name', 'email']);
+        return Organization::query()->orderBy('name')->get(['id', 'name']);
     }
 
     public function save(): void
@@ -47,7 +47,7 @@ new #[Title('Create Event')] class extends Component {
             'name' => $validated['name'],
             'slug' => Event::generateSlug($validated['name']),
             'starts_at' => $validated['starts_at'],
-            'user_id' => $validated['user_id'],
+            'organization_id' => $validated['organization_id'],
         ]);
 
         if ($validated['tables']) {
@@ -76,7 +76,7 @@ new #[Title('Create Event')] class extends Component {
 <div class="max-w-lg space-y-6">
     <div>
         <flux:heading size="xl">{{ __('Create Event') }}</flux:heading>
-        <flux:subheading>{{ __('Create a new trivia event and assign it to a host.') }}</flux:subheading>
+        <flux:subheading>{{ __('Create a new trivia event and assign it to an organization.') }}</flux:subheading>
     </div>
 
     <form wire:submit="save" class="space-y-6">
@@ -95,9 +95,9 @@ new #[Title('Create Event')] class extends Component {
             required
         />
 
-        <flux:select wire:model="user_id" :label="__('Host')" :placeholder="__('Select a host...')">
-            @foreach ($this->users as $user)
-                <flux:select.option :value="$user->id">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+        <flux:select wire:model="organization_id" :label="__('Organization')" :placeholder="__('Select an organization...')">
+            @foreach ($this->organizations as $org)
+                <flux:select.option :value="$org->id">{{ $org->name }}</flux:select.option>
             @endforeach
         </flux:select>
 

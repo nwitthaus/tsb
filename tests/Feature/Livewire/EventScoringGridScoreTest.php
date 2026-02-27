@@ -4,11 +4,9 @@ use App\Models\Event;
 use App\Models\Round;
 use App\Models\Score;
 use App\Models\Team;
-use App\Models\User;
 
 test('host can save a score', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 
@@ -20,8 +18,7 @@ test('host can save a score', function () {
 });
 
 test('host can update an existing score', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
     Score::factory()->create(['team_id' => $team->id, 'round_id' => $round->id, 'value' => 5]);
@@ -35,8 +32,7 @@ test('host can update an existing score', function () {
 });
 
 test('clearing a score deletes it', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
     Score::factory()->create(['team_id' => $team->id, 'round_id' => $round->id, 'value' => 5]);
@@ -49,8 +45,7 @@ test('clearing a score deletes it', function () {
 });
 
 test('score must be non-negative', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 
@@ -61,8 +56,7 @@ test('score must be non-negative', function () {
 });
 
 test('score cannot exceed 999.9', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 
@@ -73,8 +67,7 @@ test('score cannot exceed 999.9', function () {
 });
 
 test('score must be numeric', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 
@@ -85,9 +78,8 @@ test('score must be numeric', function () {
 });
 
 test('cannot save score for team not in this event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
-    $otherEvent = Event::factory()->create(['user_id' => $user->id, 'ended_at' => now()]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
+    $otherEvent = Event::factory()->create(['organization_id' => $organization->id, 'ended_at' => now()]);
     $otherTeam = Team::factory()->create(['event_id' => $otherEvent->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 
@@ -99,9 +91,8 @@ test('cannot save score for team not in this event', function () {
 });
 
 test('cannot save score for round not in this event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
-    $otherEvent = Event::factory()->create(['user_id' => $user->id, 'ended_at' => now()]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
+    $otherEvent = Event::factory()->create(['organization_id' => $organization->id, 'ended_at' => now()]);
     $team = Team::factory()->create(['event_id' => $event->id]);
     $otherRound = Round::factory()->create(['event_id' => $otherEvent->id, 'sort_order' => 1]);
 
@@ -113,8 +104,7 @@ test('cannot save score for round not in this event', function () {
 });
 
 test('cannot save score on ended event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->ended()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 

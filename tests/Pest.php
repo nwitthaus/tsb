@@ -41,7 +41,21 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Create a user who owns an organization, and optionally an event within it.
+ *
+ * @param  array<string, mixed>  $eventAttributes
+ * @return array{user: \App\Models\User, organization: \App\Models\Organization, event: \App\Models\Event}
+ */
+function createOwnerWithEvent(array $eventAttributes = []): array
 {
-    // ..
+    $user = \App\Models\User::factory()->create();
+    $organization = \App\Models\Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Owner->value]);
+    $event = \App\Models\Event::factory()->create(array_merge(
+        ['organization_id' => $organization->id],
+        $eventAttributes,
+    ));
+
+    return ['user' => $user, 'organization' => $organization, 'event' => $event];
 }

@@ -10,8 +10,7 @@ test('guests cannot access event management', function () {
 });
 
 test('owner can access their event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     $this->actingAs($user)
         ->get(route('events.show', $event))

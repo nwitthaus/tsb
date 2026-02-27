@@ -18,9 +18,12 @@ class EventPolicy
 
     public function view(User $user, Event $event): bool
     {
-        return $user->id === $event->user_id;
+        return $user->isOrganizationMember($event->organization);
     }
 
+    /**
+     * Organization-level ownership is checked in the route/controller via OrganizationPolicy.
+     */
     public function create(User $user): bool
     {
         return true;
@@ -28,11 +31,11 @@ class EventPolicy
 
     public function update(User $user, Event $event): bool
     {
-        return $user->id === $event->user_id;
+        return $user->isOrganizationOwner($event->organization);
     }
 
     public function delete(User $user, Event $event): bool
     {
-        return $user->id === $event->user_id;
+        return $user->isOrganizationOwner($event->organization);
     }
 }

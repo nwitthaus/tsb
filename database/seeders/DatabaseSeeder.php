@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\OrganizationRole;
 use App\Models\Event;
+use App\Models\Organization;
 use App\Models\Round;
 use App\Models\Score;
 use App\Models\Team;
@@ -13,7 +15,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->superAdmin()->create([
+        $admin = User::factory()->superAdmin()->create([
             'name' => 'Nick Witthaus',
             'email' => 'nick@witthaus.com',
         ]);
@@ -23,8 +25,16 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        $organization = Organization::factory()->create([
+            'name' => "Joe's Bar Trivia",
+            'slug' => 'joes-bar',
+        ]);
+
+        $organization->users()->attach($admin, ['role' => OrganizationRole::Owner->value]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
+
         $event = Event::factory()->create([
-            'user_id' => $user->id,
+            'organization_id' => $organization->id,
             'name' => 'Tuesday Trivia at Joe\'s',
             'slug' => 'tuesday-trivia',
             'starts_at' => now()->addHours(2),

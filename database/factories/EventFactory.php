@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -16,7 +16,7 @@ class EventFactory extends Factory
         $name = fake()->unique()->words(3, true);
 
         return [
-            'user_id' => User::factory(),
+            'organization_id' => Organization::factory(),
             'name' => $name,
             'slug' => Str::slug($name),
             'starts_at' => fake()->dateTimeBetween('now', '+2 weeks'),

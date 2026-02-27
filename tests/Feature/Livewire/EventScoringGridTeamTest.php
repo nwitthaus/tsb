@@ -2,11 +2,9 @@
 
 use App\Models\Event;
 use App\Models\Team;
-use App\Models\User;
 
 test('host can add a team with name and table number', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
@@ -19,8 +17,7 @@ test('host can add a team with name and table number', function () {
 });
 
 test('host can add a team with name only', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
@@ -31,8 +28,7 @@ test('host can add a team with name only', function () {
 });
 
 test('host can add a team with table number only', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
@@ -43,8 +39,7 @@ test('host can add a team with table number only', function () {
 });
 
 test('adding a team requires at least name or table number', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
@@ -53,8 +48,7 @@ test('adding a team requires at least name or table number', function () {
 });
 
 test('team name must be unique within an event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers']);
 
     Livewire\Livewire::actingAs($user)
@@ -66,8 +60,7 @@ test('team name must be unique within an event', function () {
 });
 
 test('table number must be unique within an event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'table_number' => 4]);
 
     Livewire\Livewire::actingAs($user)
@@ -79,9 +72,8 @@ test('table number must be unique within an event', function () {
 });
 
 test('duplicate team name is allowed across different events', function () {
-    $user = User::factory()->create();
-    $event1 = Event::factory()->create(['user_id' => $user->id]);
-    $event2 = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event1] = createOwnerWithEvent();
+    $event2 = Event::factory()->create(['organization_id' => $organization->id]);
     Team::factory()->create(['event_id' => $event1->id, 'name' => 'Quizzers']);
 
     Livewire\Livewire::actingAs($user)
@@ -93,8 +85,7 @@ test('duplicate team name is allowed across different events', function () {
 });
 
 test('soft deleted team name can be reused', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers']);
     $team->delete();
 
@@ -105,8 +96,7 @@ test('soft deleted team name can be reused', function () {
 });
 
 test('host can soft delete a team', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
 
     Livewire\Livewire::actingAs($user)
@@ -117,8 +107,7 @@ test('host can soft delete a team', function () {
 });
 
 test('host can restore a soft deleted team', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $team->delete();
 
@@ -130,8 +119,7 @@ test('host can restore a soft deleted team', function () {
 });
 
 test('host can reorder teams alphabetically', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Zebras', 'sort_order' => 1]);
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Alphas', 'sort_order' => 2]);
 
@@ -144,8 +132,7 @@ test('host can reorder teams alphabetically', function () {
 });
 
 test('host can reorder teams by table number', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'table_number' => 10, 'sort_order' => 1]);
     Team::factory()->create(['event_id' => $event->id, 'table_number' => 2, 'sort_order' => 2]);
 
@@ -158,8 +145,7 @@ test('host can reorder teams by table number', function () {
 });
 
 test('scoring grid uses constrained team column width', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Campus Lutheran Trivia Champs']);
 
     Livewire\Livewire::actingAs($user)

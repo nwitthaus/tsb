@@ -11,9 +11,11 @@
         <flux:callout variant="warning" class="mb-6">
             <flux:callout.heading>{{ __('Final Scores') }}</flux:callout.heading>
             <flux:callout.text>{{ __('This event has ended. Scores are read-only.') }}</flux:callout.text>
-            <x-slot:actions>
-                <flux:button size="sm" wire:click="reopenEvent">{{ __('Reopen Event') }}</flux:button>
-            </x-slot:actions>
+            @if ($canManage)
+                <x-slot:actions>
+                    <flux:button size="sm" wire:click="reopenEvent">{{ __('Reopen Event') }}</flux:button>
+                </x-slot:actions>
+            @endif
         </flux:callout>
     @endif
 
@@ -97,54 +99,56 @@
         </div>
     @endif
 
-    {{-- Control Bar (active event only) --}}
-    @if ($event->isActive())
-        <div class="mt-4 flex flex-wrap items-center gap-2">
-            <flux:button size="sm" icon="plus" wire:click="addRound">{{ __('Add Round') }}</flux:button>
+    @if ($canManage)
+        {{-- Control Bar (active event only) --}}
+        @if ($event->isActive())
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                <flux:button size="sm" icon="plus" wire:click="addRound">{{ __('Add Round') }}</flux:button>
 
-            @if ($rounds->isNotEmpty())
-                <flux:modal.trigger name="confirm-remove-round">
-                    <flux:button size="sm" variant="danger" icon="minus">{{ __('Remove Last Round') }}</flux:button>
-                </flux:modal.trigger>
-            @endif
+                @if ($rounds->isNotEmpty())
+                    <flux:modal.trigger name="confirm-remove-round">
+                        <flux:button size="sm" variant="danger" icon="minus">{{ __('Remove Last Round') }}</flux:button>
+                    </flux:modal.trigger>
+                @endif
 
-            <div class="ml-auto">
-                <flux:modal.trigger name="confirm-end-event">
-                    <flux:button size="sm" variant="danger">{{ __('End Event') }}</flux:button>
-                </flux:modal.trigger>
+                <div class="ml-auto">
+                    <flux:modal.trigger name="confirm-end-event">
+                        <flux:button size="sm" variant="danger">{{ __('End Event') }}</flux:button>
+                    </flux:modal.trigger>
+                </div>
             </div>
-        </div>
+        @endif
+
+        {{-- Confirm Remove Last Round Modal --}}
+        <flux:modal name="confirm-remove-round" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('Remove Last Round?') }}</flux:heading>
+                    <flux:subheading>{{ __('This will delete the last round and all its scores. This cannot be undone.') }}</flux:subheading>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <flux:button>{{ __('Cancel') }}</flux:button>
+                    </flux:modal.close>
+                    <flux:button variant="danger" wire:click="removeLastRound" x-on:click="$flux.modal('confirm-remove-round').close()">{{ __('Remove Round') }}</flux:button>
+                </div>
+            </div>
+        </flux:modal>
+
+        {{-- Confirm End Event Modal --}}
+        <flux:modal name="confirm-end-event" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('End Event?') }}</flux:heading>
+                    <flux:subheading>{{ __('The scoreboard will show final scores and stop updating. You can reopen the event later.') }}</flux:subheading>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <flux:button>{{ __('Cancel') }}</flux:button>
+                    </flux:modal.close>
+                    <flux:button variant="danger" wire:click="endEvent" x-on:click="$flux.modal('confirm-end-event').close()">{{ __('End Event') }}</flux:button>
+                </div>
+            </div>
+        </flux:modal>
     @endif
-
-    {{-- Confirm Remove Last Round Modal --}}
-    <flux:modal name="confirm-remove-round" class="md:w-96">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">{{ __('Remove Last Round?') }}</flux:heading>
-                <flux:subheading>{{ __('This will delete the last round and all its scores. This cannot be undone.') }}</flux:subheading>
-            </div>
-            <div class="flex justify-end gap-2">
-                <flux:modal.close>
-                    <flux:button>{{ __('Cancel') }}</flux:button>
-                </flux:modal.close>
-                <flux:button variant="danger" wire:click="removeLastRound" x-on:click="$flux.modal('confirm-remove-round').close()">{{ __('Remove Round') }}</flux:button>
-            </div>
-        </div>
-    </flux:modal>
-
-    {{-- Confirm End Event Modal --}}
-    <flux:modal name="confirm-end-event" class="md:w-96">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">{{ __('End Event?') }}</flux:heading>
-                <flux:subheading>{{ __('The scoreboard will show final scores and stop updating. You can reopen the event later.') }}</flux:subheading>
-            </div>
-            <div class="flex justify-end gap-2">
-                <flux:modal.close>
-                    <flux:button>{{ __('Cancel') }}</flux:button>
-                </flux:modal.close>
-                <flux:button variant="danger" wire:click="endEvent" x-on:click="$flux.modal('confirm-end-event').close()">{{ __('End Event') }}</flux:button>
-            </div>
-        </div>
-    </flux:modal>
 </div>

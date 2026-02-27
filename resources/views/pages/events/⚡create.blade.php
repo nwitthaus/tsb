@@ -1,12 +1,15 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Organization;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 new #[Title('Create Event')] class extends Component {
+    public Organization $organization;
+
     #[Validate('required|string|max:255')]
     public string $name = '';
 
@@ -22,9 +25,10 @@ new #[Title('Create Event')] class extends Component {
     #[Validate('nullable|integer|min:1|max:50')]
     public ?int $rounds = null;
 
-    public function mount(): void
+    public function mount(Organization $organization): void
     {
-        $this->authorize('create', Event::class);
+        $this->authorize('update', $organization);
+        $this->organization = $organization;
     }
 
     public function updated(string $property): void
@@ -36,7 +40,7 @@ new #[Title('Create Event')] class extends Component {
 
     public function save(): void
     {
-        $this->authorize('create', Event::class);
+        $this->authorize('update', $this->organization);
 
         $validated = $this->validate();
 
@@ -44,7 +48,7 @@ new #[Title('Create Event')] class extends Component {
         $rounds = $validated['rounds'] ?? null;
         unset($validated['tables'], $validated['rounds']);
 
-        $event = auth()->user()->events()->create($validated);
+        $event = $this->organization->events()->create($validated);
 
         if ($tables) {
             for ($i = 1; $i <= $tables; $i++) {
@@ -69,7 +73,7 @@ new #[Title('Create Event')] class extends Component {
 
 <div class="mx-auto max-w-lg">
     <flux:heading size="xl">{{ __('Create Event') }}</flux:heading>
-    <flux:subheading>{{ __('Set up a new trivia event. You can add teams and rounds after creating it.') }}</flux:subheading>
+    <flux:subheading>{{ __('Set up a new trivia event for :org. You can add teams and rounds after creating it.', ['org' => $organization->name]) }}</flux:subheading>
 
     <form wire:submit="save" class="mt-6 space-y-6">
         <flux:input

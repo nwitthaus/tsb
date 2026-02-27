@@ -25,7 +25,7 @@ new #[Title('Manage Users')] class extends Component {
     public function users(): LengthAwarePaginator
     {
         return User::query()
-            ->withCount('events')
+            ->withCount('organizations')
             ->when($this->search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -67,7 +67,7 @@ new #[Title('Manage Users')] class extends Component {
         <flux:table.columns>
             <flux:table.column>{{ __('Name') }}</flux:table.column>
             <flux:table.column>{{ __('Email') }}</flux:table.column>
-            <flux:table.column>{{ __('Events') }}</flux:table.column>
+            <flux:table.column>{{ __('Organizations') }}</flux:table.column>
             <flux:table.column>{{ __('Registered') }}</flux:table.column>
             <flux:table.column></flux:table.column>
         </flux:table.columns>
@@ -83,7 +83,7 @@ new #[Title('Manage Users')] class extends Component {
                         </div>
                     </flux:table.cell>
                     <flux:table.cell>{{ $user->email }}</flux:table.cell>
-                    <flux:table.cell>{{ $user->events_count }}</flux:table.cell>
+                    <flux:table.cell>{{ $user->organizations_count }}</flux:table.cell>
                     <flux:table.cell>{{ $user->created_at->format('M j, Y') }}</flux:table.cell>
                     <flux:table.cell>
                         <div class="flex items-center gap-1">

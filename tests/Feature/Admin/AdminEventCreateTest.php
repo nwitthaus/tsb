@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Organization;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -11,30 +12,30 @@ test('non-admin cannot access admin create event page', function () {
         ->assertForbidden();
 });
 
-test('admin can see create event form with user dropdown', function () {
+test('admin can see create event form with organization dropdown', function () {
     $admin = User::factory()->superAdmin()->create();
-    User::factory()->create(['name' => 'Available Host']);
+    Organization::factory()->create(['name' => 'Trivia Co']);
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.create')
-        ->assertSee('Available Host');
+        ->assertSee('Trivia Co');
 });
 
-test('admin can create an event assigned to any user', function () {
+test('admin can create an event assigned to any organization', function () {
     $admin = User::factory()->superAdmin()->create();
-    $host = User::factory()->create(['name' => 'Assigned Host']);
+    $org = Organization::factory()->create(['name' => 'Trivia Co']);
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.create')
         ->set('name', 'Wednesday Trivia')
         ->set('starts_at', '2026-03-15T19:00')
-        ->set('user_id', $host->id)
+        ->set('organization_id', $org->id)
         ->call('save')
         ->assertRedirect(route('admin.events.index'));
 
     $this->assertDatabaseHas('events', [
         'name' => 'Wednesday Trivia',
-        'user_id' => $host->id,
+        'organization_id' => $org->id,
     ]);
 });
 
@@ -44,18 +45,18 @@ test('admin create event validates required fields', function () {
     Livewire::actingAs($admin)
         ->test('pages::admin.events.create')
         ->call('save')
-        ->assertHasErrors(['name', 'starts_at', 'user_id']);
+        ->assertHasErrors(['name', 'starts_at', 'organization_id']);
 });
 
 test('admin create event generates slug automatically', function () {
     $admin = User::factory()->superAdmin()->create();
-    $host = User::factory()->create();
+    $org = Organization::factory()->create();
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.create')
         ->set('name', 'Friday Night Trivia')
         ->set('starts_at', '2026-03-20T20:00')
-        ->set('user_id', $host->id)
+        ->set('organization_id', $org->id)
         ->call('save');
 
     $this->assertDatabaseHas('events', [

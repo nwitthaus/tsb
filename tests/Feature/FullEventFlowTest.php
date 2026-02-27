@@ -1,19 +1,23 @@
 <?php
 
+use App\Enums\OrganizationRole;
+use App\Models\Organization;
 use App\Models\User;
 
 test('complete event flow: create, add teams, add rounds, score, end', function () {
     $user = User::factory()->create();
+    $organization = Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     // Create event
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create')
+        ->test('pages::events.create', ['organization' => $organization])
         ->set('name', 'Integration Test Trivia')
         ->set('slug', 'integration-test')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
         ->call('save');
 
-    $event = $user->events()->first();
+    $event = $organization->events()->first();
     expect($event)->not->toBeNull();
 
     // Add teams via teams manager

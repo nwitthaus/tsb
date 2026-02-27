@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Organization;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -20,25 +21,25 @@ test('admin can see edit event form', function () {
     Livewire::actingAs($admin)
         ->test('pages::admin.events.edit', ['event' => $event])
         ->assertSet('name', $event->name)
-        ->assertSet('user_id', $event->user_id);
+        ->assertSet('organization_id', $event->organization_id);
 });
 
 test('admin can update event details', function () {
     $admin = User::factory()->superAdmin()->create();
     $event = Event::factory()->create();
-    $newHost = User::factory()->create(['name' => 'New Host']);
+    $newOrg = Organization::factory()->create(['name' => 'New Org']);
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.edit', ['event' => $event])
         ->set('name', 'Updated Event Name')
-        ->set('user_id', $newHost->id)
+        ->set('organization_id', $newOrg->id)
         ->call('save')
         ->assertRedirect(route('admin.events.index'));
 
     $this->assertDatabaseHas('events', [
         'id' => $event->id,
         'name' => 'Updated Event Name',
-        'user_id' => $newHost->id,
+        'organization_id' => $newOrg->id,
     ]);
 });
 

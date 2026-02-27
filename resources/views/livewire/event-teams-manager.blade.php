@@ -2,7 +2,7 @@
     newName: '',
     newTableNumber: '',
 }">
-    @if ($event->isActive())
+    @if ($event->isActive() && $canManage)
         @error('team') <flux:callout variant="danger" class="mb-4"><flux:callout.text>{{ $message }}</flux:callout.text></flux:callout> @enderror
 
         <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
@@ -129,7 +129,7 @@
             </div>
         @else
             <div class="rounded-lg border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-600">
-                <flux:subheading>{{ __('No teams yet. The event has ended.') }}</flux:subheading>
+                <flux:subheading>{{ __('No teams yet.') }}</flux:subheading>
             </div>
         @endif
     @endif

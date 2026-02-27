@@ -1,12 +1,10 @@
 <?php
 
-use App\Models\Event;
 use App\Models\Team;
 use App\Models\User;
 
 test('teams page loads and displays teams tab', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id, 'name' => 'Tuesday Trivia']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
 
     $this->actingAs($user)
         ->get(route('events.teams', $event))
@@ -17,9 +15,8 @@ test('teams page loads and displays teams tab', function () {
 });
 
 test('unauthorized user cannot view teams page', function () {
-    $owner = User::factory()->create();
+    ['event' => $event] = createOwnerWithEvent();
     $other = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $owner->id]);
 
     $this->actingAs($other)
         ->get(route('events.teams', $event))
@@ -27,8 +24,7 @@ test('unauthorized user cannot view teams page', function () {
 });
 
 test('host can update a team name', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Old Name', 'table_number' => 5]);
 
     Livewire\Livewire::actingAs($user)
@@ -40,8 +36,7 @@ test('host can update a team name', function () {
 });
 
 test('host can update a team table number', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers', 'table_number' => 1]);
 
     Livewire\Livewire::actingAs($user)
@@ -53,8 +48,7 @@ test('host can update a team table number', function () {
 });
 
 test('updating team rejects duplicate name within event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Taken Name']);
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'My Team']);
 
@@ -67,8 +61,7 @@ test('updating team rejects duplicate name within event', function () {
 });
 
 test('updating team allows keeping same name', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers', 'table_number' => 3]);
 
     Livewire\Livewire::actingAs($user)
@@ -78,8 +71,7 @@ test('updating team allows keeping same name', function () {
 });
 
 test('updating team requires at least name or table number', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers']);
 
     Livewire\Livewire::actingAs($user)
@@ -91,8 +83,7 @@ test('updating team requires at least name or table number', function () {
 });
 
 test('cannot update team on ended event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->ended()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Old Name']);
 
     Livewire\Livewire::actingAs($user)

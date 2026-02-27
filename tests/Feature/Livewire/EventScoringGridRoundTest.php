@@ -1,14 +1,11 @@
 <?php
 
-use App\Models\Event;
 use App\Models\Round;
 use App\Models\Score;
 use App\Models\Team;
-use App\Models\User;
 
 test('host can add a round', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
@@ -19,8 +16,7 @@ test('host can add a round', function () {
 });
 
 test('adding rounds auto-increments sort order', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     $component = Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event]);
@@ -33,8 +29,7 @@ test('adding rounds auto-increments sort order', function () {
 });
 
 test('host can remove the last round', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
     $lastRound = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 2]);
 
@@ -47,8 +42,7 @@ test('host can remove the last round', function () {
 });
 
 test('removing last round cascades to its scores', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
     Score::factory()->create(['team_id' => $team->id, 'round_id' => $round->id]);
@@ -61,8 +55,7 @@ test('removing last round cascades to its scores', function () {
 });
 
 test('cannot remove round when there are no rounds', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
@@ -73,8 +66,7 @@ test('cannot remove round when there are no rounds', function () {
 });
 
 test('scoring grid rounds use responsive compact column widths', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     Team::factory()->create(['event_id' => $event->id]);
     Round::factory()->create(['event_id' => $event->id, 'sort_order' => 1]);
 

@@ -1,11 +1,9 @@
 <?php
 
 use App\Models\Event;
-use App\Models\User;
 
 test('host can end an active event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
@@ -15,8 +13,7 @@ test('host can end an active event', function () {
 });
 
 test('host can reopen an ended event', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->ended()->create(['user_id' => $user->id]);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
 
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
@@ -26,9 +23,8 @@ test('host can reopen an ended event', function () {
 });
 
 test('can reopen event even if user has another active event', function () {
-    $user = User::factory()->create();
-    Event::factory()->create(['user_id' => $user->id, 'ended_at' => null]);
-    $endedEvent = Event::factory()->ended()->create(['user_id' => $user->id]);
+    ['user' => $user, 'organization' => $organization] = createOwnerWithEvent();
+    $endedEvent = Event::factory()->create(['organization_id' => $organization->id, 'ended_at' => now()]);
 
     Livewire\Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $endedEvent])
@@ -39,8 +35,7 @@ test('can reopen event even if user has another active event', function () {
 });
 
 test('ended event shows read-only grid', function () {
-    $user = User::factory()->create();
-    $event = Event::factory()->ended()->create(['user_id' => $user->id, 'name' => 'Past Trivia']);
+    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now(), 'name' => 'Past Trivia']);
 
     $this->actingAs($user)
         ->get(route('events.scoring', $event))

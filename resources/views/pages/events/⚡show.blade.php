@@ -93,39 +93,56 @@ new #[Title('Event Details')] class extends Component {
         <flux:tab :href="route('events.scoring', $event)" wire:navigate>{{ __('Scoring') }}</flux:tab>
     </flux:tabs>
 
-    <div class="max-w-lg space-y-6">
-        <form wire:submit="save" class="space-y-6">
-            <flux:input
-                wire:model="name"
-                :label="__('Event Name')"
-                required
-            />
+    @can('update', $event)
+        <div class="max-w-lg space-y-6">
+            <form wire:submit="save" class="space-y-6">
+                <flux:input
+                    wire:model="name"
+                    :label="__('Event Name')"
+                    required
+                />
 
-            <flux:input
-                wire:model="slug"
-                :label="__('Join Code')"
-                :description="__('The URL slug teams use to find your scoreboard.')"
-                required
-            />
+                <flux:input
+                    wire:model="slug"
+                    :label="__('Join Code')"
+                    :description="__('The URL slug teams use to find your scoreboard.')"
+                    required
+                />
 
-            <flux:input
-                wire:model="starts_at"
-                type="datetime-local"
-                :label="__('Scheduled Start')"
-                required
-            />
+                <flux:input
+                    wire:model="starts_at"
+                    type="datetime-local"
+                    :label="__('Scheduled Start')"
+                    required
+                />
 
-            <div class="flex items-center gap-4">
-                <flux:button variant="primary" type="submit">
-                    {{ __('Save Changes') }}
-                </flux:button>
+                <div class="flex items-center gap-4">
+                    <flux:button variant="primary" type="submit">
+                        {{ __('Save Changes') }}
+                    </flux:button>
 
-                <x-action-message on="saved">
-                    {{ __('Saved.') }}
-                </x-action-message>
+                    <x-action-message on="saved">
+                        {{ __('Saved.') }}
+                    </x-action-message>
+                </div>
+            </form>
+        </div>
+    @else
+        <div class="max-w-lg space-y-4">
+            <div>
+                <flux:heading size="sm">{{ __('Event Name') }}</flux:heading>
+                <flux:text>{{ $event->name }}</flux:text>
             </div>
-        </form>
-    </div>
+            <div>
+                <flux:heading size="sm">{{ __('Join Code') }}</flux:heading>
+                <flux:text>{{ $event->slug }}</flux:text>
+            </div>
+            <div>
+                <flux:heading size="sm">{{ __('Scheduled Start') }}</flux:heading>
+                <flux:text>{{ $event->starts_at->format('M j, Y g:i A') }}</flux:text>
+            </div>
+        </div>
+    @endcan
 
     {{-- Share Scoreboard --}}
     <div class="mt-8 flex items-start gap-6 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">

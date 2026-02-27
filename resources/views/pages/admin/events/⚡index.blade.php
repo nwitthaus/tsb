@@ -25,12 +25,12 @@ new #[Title('Manage Events')] class extends Component {
     public function events(): LengthAwarePaginator
     {
         return Event::query()
-            ->with('user')
+            ->with('organization')
             ->withCount('teams')
             ->when($this->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($q2) use ($search) {
+                        ->orWhereHas('organization', function ($q2) use ($search) {
                             $q2->where('name', 'like', "%{$search}%");
                         });
                 });
@@ -52,7 +52,7 @@ new #[Title('Manage Events')] class extends Component {
     <div class="flex items-center justify-between">
         <div>
             <flux:heading size="xl">{{ __('Events') }}</flux:heading>
-            <flux:subheading>{{ __('Manage trivia events across all hosts.') }}</flux:subheading>
+            <flux:subheading>{{ __('Manage trivia events across all organizations.') }}</flux:subheading>
         </div>
         <flux:button variant="primary" :href="route('admin.events.create')" wire:navigate>
             {{ __('Create Event') }}
@@ -64,7 +64,7 @@ new #[Title('Manage Events')] class extends Component {
     <flux:table :paginate="$this->events">
         <flux:table.columns>
             <flux:table.column>{{ __('Event') }}</flux:table.column>
-            <flux:table.column>{{ __('Host') }}</flux:table.column>
+            <flux:table.column>{{ __('Organization') }}</flux:table.column>
             <flux:table.column>{{ __('Status') }}</flux:table.column>
             <flux:table.column>{{ __('Scheduled') }}</flux:table.column>
             <flux:table.column>{{ __('Teams') }}</flux:table.column>
@@ -74,7 +74,7 @@ new #[Title('Manage Events')] class extends Component {
             @foreach ($this->events as $event)
                 <flux:table.row :key="$event->id">
                     <flux:table.cell variant="strong">{{ $event->name }}</flux:table.cell>
-                    <flux:table.cell>{{ $event->user->name }}</flux:table.cell>
+                    <flux:table.cell>{{ $event->organization->name }}</flux:table.cell>
                     <flux:table.cell>
                         @if ($event->isActive())
                             <flux:badge color="green" size="sm" inset="top bottom">{{ __('Active') }}</flux:badge>

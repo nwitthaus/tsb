@@ -1,19 +1,19 @@
 <?php
 
 use App\Models\Event;
-use App\Models\User;
+use App\Models\Organization;
 
-test('event belongs to a user', function () {
+test('event belongs to an organization', function () {
     $event = Event::factory()->create();
 
-    expect($event->user)->toBeInstanceOf(User::class);
+    expect($event->organization)->toBeInstanceOf(Organization::class);
 });
 
-test('user has many events', function () {
-    $user = User::factory()->create();
-    Event::factory()->count(3)->create(['user_id' => $user->id]);
+test('organization has many events', function () {
+    $organization = Organization::factory()->create();
+    Event::factory()->count(3)->create(['organization_id' => $organization->id]);
 
-    expect($user->events)->toHaveCount(3);
+    expect($organization->events)->toHaveCount(3);
 });
 
 test('event knows if it is active', function () {

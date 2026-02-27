@@ -14,18 +14,18 @@
 namespace App\Models{
 /**
  * @property int $id
- * @property int $user_id
+ * @property int $organization_id
  * @property string $name
  * @property string $slug
  * @property \Carbon\CarbonImmutable $starts_at
  * @property \Carbon\CarbonImmutable|null $ended_at
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \App\Models\Organization $organization
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Round> $rounds
  * @property-read int|null $rounds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
  * @property-read int|null $teams_count
- * @property-read \App\Models\User $user
  * @method static \Database\Factories\EventFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newQuery()
@@ -34,14 +34,76 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereEndedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereOrganizationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStartsAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUserId($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperEvent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $events
+ * @property-read int|null $events_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrganizationInvitation> $invitations
+ * @property-read int|null $invitations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $owners
+ * @property-read int|null $owners_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Database\Factories\OrganizationFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperOrganization {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $organization_id
+ * @property string $email
+ * @property string $role
+ * @property string $token
+ * @property int $invited_by
+ * @property \Carbon\CarbonImmutable|null $accepted_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read \App\Models\User $inviter
+ * @property-read \App\Models\Organization $organization
+ * @method static \Database\Factories\OrganizationInvitationFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereAcceptedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereInvitedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereOrganizationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperOrganizationInvitation {}
 }
 
 namespace App\Models{
@@ -143,10 +205,10 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $events
- * @property-read int|null $events_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $organizations
+ * @property-read int|null $organizations_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()

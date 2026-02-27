@@ -13,6 +13,8 @@ class EventScoringGrid extends Component
 {
     public Event $event;
 
+    public bool $canManage = false;
+
     /** @var Collection<int, Team> */
     public Collection $teams;
 
@@ -24,8 +26,9 @@ class EventScoringGrid extends Component
 
     public function mount(Event $event): void
     {
-        $this->authorize('update', $event);
+        $this->authorize('view', $event);
         $this->event = $event;
+        $this->canManage = auth()->user()->can('update', $event);
         $this->loadGrid();
     }
 
@@ -45,6 +48,8 @@ class EventScoringGrid extends Component
 
     public function addRound(): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -60,6 +65,8 @@ class EventScoringGrid extends Component
 
     public function removeLastRound(): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -74,6 +81,8 @@ class EventScoringGrid extends Component
 
     public function saveScore(int $teamId, int $roundId, ?string $value): void
     {
+        $this->authorize('view', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -115,6 +124,8 @@ class EventScoringGrid extends Component
 
     public function endEvent(): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -125,6 +136,8 @@ class EventScoringGrid extends Component
 
     public function reopenEvent(): void
     {
+        $this->authorize('update', $this->event);
+
         $this->event->update(['ended_at' => null]);
         $this->event->refresh();
     }

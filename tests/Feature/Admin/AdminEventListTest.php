@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Organization;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -23,14 +24,14 @@ test('admin can see event list', function () {
         ->assertSee($events[2]->name);
 });
 
-test('event list shows host name', function () {
+test('event list shows organization name', function () {
     $admin = User::factory()->superAdmin()->create();
-    $host = User::factory()->create(['name' => 'Jane Host']);
-    Event::factory()->for($host)->create();
+    $org = Organization::factory()->create(['name' => 'Trivia Co']);
+    Event::factory()->create(['organization_id' => $org->id]);
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.index')
-        ->assertSee('Jane Host');
+        ->assertSee('Trivia Co');
 });
 
 test('event list is searchable', function () {

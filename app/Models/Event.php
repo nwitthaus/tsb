@@ -17,7 +17,7 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'organization_id',
         'name',
         'slug',
         'starts_at',
@@ -35,9 +35,9 @@ class Event extends Model
         ];
     }
 
-    public function user(): BelongsTo
+    public function organization(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Organization::class);
     }
 
     public function teams(): HasMany

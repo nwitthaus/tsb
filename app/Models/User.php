@@ -3,8 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\OrganizationRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -61,9 +62,34 @@ class User extends Authenticatable
         return $this->is_super_admin;
     }
 
-    public function events(): HasMany
+    public function organizations(): BelongsToMany
     {
-        return $this->hasMany(Event::class);
+        return $this->belongsToMany(Organization::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function isOrganizationOwner(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->wherePivot('organization_id', $organization->id)
+            ->wherePivot('role', OrganizationRole::Owner->value)
+            ->first() !== null;
+    }
+
+    public function isOrganizationMember(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->wherePivot('organization_id', $organization->id)
+            ->first() !== null;
+    }
+
+    public function hasOrganizationRole(Organization $organization, OrganizationRole $role): bool
+    {
+        return $this->organizations()
+            ->wherePivot('organization_id', $organization->id)
+            ->wherePivot('role', $role->value)
+            ->first() !== null;
     }
 
     /**

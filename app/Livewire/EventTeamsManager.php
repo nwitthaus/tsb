@@ -14,13 +14,16 @@ class EventTeamsManager extends Component
 {
     public Event $event;
 
+    public bool $canManage = false;
+
     /** @var Collection<int, Team> */
     public Collection $teams;
 
     public function mount(Event $event): void
     {
-        $this->authorize('update', $event);
+        $this->authorize('view', $event);
         $this->event = $event;
+        $this->canManage = auth()->user()->can('update', $event);
         $this->loadTeams();
     }
 
@@ -31,6 +34,8 @@ class EventTeamsManager extends Component
 
     public function addTeam(?string $name, ?int $tableNumber): void
     {
+        $this->authorize('update', $this->event);
+
         $this->resetErrorBag('team');
 
         if (! $this->event->isActive()) {
@@ -74,6 +79,8 @@ class EventTeamsManager extends Component
 
     public function updateTeam(int $teamId, ?string $name, ?int $tableNumber): void
     {
+        $this->authorize('update', $this->event);
+
         $this->resetErrorBag('team');
 
         if (! $this->event->isActive()) {
@@ -116,6 +123,8 @@ class EventTeamsManager extends Component
 
     public function removeTeam(int $teamId): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -127,6 +136,8 @@ class EventTeamsManager extends Component
 
     public function restoreTeam(int $teamId): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
@@ -138,6 +149,8 @@ class EventTeamsManager extends Component
 
     public function reorderTeams(string $order): void
     {
+        $this->authorize('update', $this->event);
+
         if (! $this->event->isActive()) {
             return;
         }
