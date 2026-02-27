@@ -284,3 +284,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ## Static Analysis
 
 - Run `vendor/bin/phpstan analyse --memory-limit=512M` after modifying PHP files to catch type errors before finalizing changes.
+
+## Database Conventions
+
+- Never use enum column types in migrations. Always store enums as string columns to allow for future expansion without requiring a migration.
