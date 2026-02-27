@@ -106,6 +106,6 @@ test('edit event has links to manage scoring and teams', function () {
 
     Livewire::actingAs($admin)
         ->test('pages::admin.events.edit', ['event' => $event])
-        ->assertSeeHtml(route('events.show', $event))
-        ->assertSeeHtml(route('events.teams', $event));
+        ->assertSeeHtml(route('organizations.events.edit', [$event->organization, $event]))
+        ->assertSeeHtml(route('organizations.events.teams', [$event->organization, $event]));
 });

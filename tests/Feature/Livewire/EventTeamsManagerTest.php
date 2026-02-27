@@ -3,11 +3,11 @@
 use App\Models\Team;
 use App\Models\User;
 
-test('teams page loads and displays teams tab', function () {
-    ['user' => $user, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
+test('teams page loads and displays teams manager', function () {
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
 
     $this->actingAs($user)
-        ->get(route('events.teams', $event))
+        ->get(route('organizations.events.teams', [$organization, $event]))
         ->assertOk()
         ->assertSee('Tuesday Trivia')
         ->assertSee('Teams')
@@ -15,11 +15,11 @@ test('teams page loads and displays teams tab', function () {
 });
 
 test('unauthorized user cannot view teams page', function () {
-    ['event' => $event] = createOwnerWithEvent();
+    ['organization' => $organization, 'event' => $event] = createOwnerWithEvent();
     $other = User::factory()->create();
 
     $this->actingAs($other)
-        ->get(route('events.teams', $event))
+        ->get(route('organizations.events.teams', [$organization, $event]))
         ->assertForbidden();
 });
 
