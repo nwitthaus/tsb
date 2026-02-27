@@ -27,7 +27,10 @@ new #[Title('Admin Overview')] class extends Component {
 }; ?>
 
 <div class="space-y-6">
-    <flux:heading size="xl">{{ __('Admin Overview') }}</flux:heading>
+    <div>
+        <flux:heading size="xl">{{ __('Admin Overview') }}</flux:heading>
+        <flux:subheading>{{ __('System-wide statistics and quick links.') }}</flux:subheading>
+    </div>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <flux:card>

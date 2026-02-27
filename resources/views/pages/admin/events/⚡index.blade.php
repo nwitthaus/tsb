@@ -50,7 +50,10 @@ new #[Title('Manage Events')] class extends Component {
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <flux:heading size="xl">{{ __('Manage Events') }}</flux:heading>
+        <div>
+            <flux:heading size="xl">{{ __('Events') }}</flux:heading>
+            <flux:subheading>{{ __('Manage trivia events across all hosts.') }}</flux:subheading>
+        </div>
         <flux:button variant="primary" :href="route('admin.events.create')" wire:navigate>
             {{ __('Create Event') }}
         </flux:button>

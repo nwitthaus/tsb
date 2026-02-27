@@ -52,7 +52,10 @@ new #[Title('Manage Users')] class extends Component {
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <flux:heading size="xl">{{ __('Users') }}</flux:heading>
+        <div>
+            <flux:heading size="xl">{{ __('Users') }}</flux:heading>
+            <flux:subheading>{{ __('Manage user accounts and permissions.') }}</flux:subheading>
+        </div>
         <flux:button variant="primary" :href="route('admin.users.create')" wire:navigate>
             {{ __('Create User') }}
         </flux:button>

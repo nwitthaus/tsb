@@ -37,7 +37,7 @@ new #[Title('Create User')] class extends Component {
     }
 }; ?>
 
-<div class="mx-auto max-w-lg space-y-6">
+<div class="max-w-lg space-y-6">
     <div>
         <flux:heading size="xl">{{ __('Create User') }}</flux:heading>
         <flux:subheading>{{ __('Add a new user to the system.') }}</flux:subheading>

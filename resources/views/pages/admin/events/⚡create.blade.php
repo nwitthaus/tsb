@@ -14,8 +14,12 @@ new #[Title('Create Event')] class extends Component {
 
     public ?int $user_id = null;
 
+    public ?int $tables = null;
+
+    public ?int $rounds = null;
+
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -23,6 +27,8 @@ new #[Title('Create Event')] class extends Component {
             'name' => 'required|string|max:255',
             'starts_at' => 'required|date',
             'user_id' => 'required|exists:users,id',
+            'tables' => 'nullable|integer|min:1|max:200',
+            'rounds' => 'nullable|integer|min:1|max:50',
         ];
     }
 
@@ -37,12 +43,29 @@ new #[Title('Create Event')] class extends Component {
     {
         $validated = $this->validate();
 
-        Event::create([
+        $event = Event::create([
             'name' => $validated['name'],
             'slug' => Event::generateSlug($validated['name']),
             'starts_at' => $validated['starts_at'],
             'user_id' => $validated['user_id'],
         ]);
+
+        if ($validated['tables']) {
+            for ($i = 1; $i <= $validated['tables']; $i++) {
+                $event->teams()->create([
+                    'table_number' => $i,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
+
+        if ($validated['rounds']) {
+            for ($i = 1; $i <= $validated['rounds']; $i++) {
+                $event->rounds()->create([
+                    'sort_order' => $i,
+                ]);
+            }
+        }
 
         Flux::toast(__('Event created successfully.'));
 
@@ -50,11 +73,13 @@ new #[Title('Create Event')] class extends Component {
     }
 }; ?>
 
-<div class="mx-auto max-w-lg">
-    <flux:heading size="xl">{{ __('Create Event') }}</flux:heading>
-    <flux:subheading>{{ __('Create a new trivia event and assign it to a host.') }}</flux:subheading>
+<div class="max-w-lg space-y-6">
+    <div>
+        <flux:heading size="xl">{{ __('Create Event') }}</flux:heading>
+        <flux:subheading>{{ __('Create a new trivia event and assign it to a host.') }}</flux:subheading>
+    </div>
 
-    <form wire:submit="save" class="mt-6 space-y-6">
+    <form wire:submit="save" class="space-y-6">
         <flux:input
             wire:model="name"
             :label="__('Event Name')"
@@ -75,6 +100,26 @@ new #[Title('Create Event')] class extends Component {
                 <flux:select.option :value="$user->id">{{ $user->name }} ({{ $user->email }})</flux:select.option>
             @endforeach
         </flux:select>
+
+        <flux:input
+            wire:model="tables"
+            type="number"
+            :label="__('Number of Tables')"
+            :description="__('Pre-creates teams numbered 1 through this value. Leave blank to add teams manually.')"
+            :placeholder="__('e.g. 20')"
+            min="1"
+            max="200"
+        />
+
+        <flux:input
+            wire:model="rounds"
+            type="number"
+            :label="__('Number of Rounds')"
+            :description="__('Pre-creates rounds on the scoring grid. You can add or remove rounds later.')"
+            :placeholder="__('e.g. 6')"
+            min="1"
+            max="50"
+        />
 
         <div class="flex justify-end gap-2">
             <flux:button :href="route('admin.events.index')" wire:navigate>

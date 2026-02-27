@@ -78,7 +78,7 @@ new #[Title('Edit Event')] class extends Component {
     }
 }; ?>
 
-<div class="mx-auto max-w-lg space-y-6">
+<div class="max-w-lg space-y-6">
     <div>
         <flux:heading size="xl">{{ __('Edit Event') }}</flux:heading>
         <flux:subheading>{{ $event->name }}</flux:subheading>

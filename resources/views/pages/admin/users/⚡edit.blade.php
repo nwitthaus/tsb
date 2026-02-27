@@ -76,7 +76,7 @@ new #[Title('Edit User')] class extends Component {
     }
 }; ?>
 
-<div class="mx-auto max-w-lg space-y-6">
+<div class="max-w-lg space-y-6">
     <div>
         <flux:heading size="xl">{{ __('Edit User') }}</flux:heading>
         <flux:subheading>{{ $user->name }} &mdash; {{ $user->email }}</flux:subheading>
