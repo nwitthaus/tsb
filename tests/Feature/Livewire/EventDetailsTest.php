@@ -88,6 +88,35 @@ test('unauthorized user cannot view event details', function () {
         ->assertForbidden();
 });
 
+test('can end an active event from edit page', function () {
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
+        ->call('endEvent');
+
+    expect($event->fresh()->ended_at)->not->toBeNull();
+});
+
+test('can reopen an ended event from edit page', function () {
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
+
+    Livewire\Livewire::actingAs($user)
+        ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
+        ->call('reopenEvent');
+
+    expect($event->fresh()->ended_at)->toBeNull();
+});
+
+test('event must belong to organization', function () {
+    ['user' => $user, 'organization' => $organization] = createOwnerWithEvent();
+    $otherEvent = \App\Models\Event::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('organizations.events.edit', [$organization, $otherEvent]))
+        ->assertNotFound();
+});
+
 test('edit page displays scoreboard share section', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-trivia']);
 

@@ -22,6 +22,7 @@ new #[Title('Event Details')] class extends Component {
 
     public function mount(Organization $organization, Event $event): void
     {
+        abort_unless($event->organization_id === $organization->id, 404);
         $this->authorize('view', $event);
 
         $this->organization = $organization;
@@ -57,6 +58,11 @@ new #[Title('Event Details')] class extends Component {
     public function endEvent(): void
     {
         $this->authorize('update', $this->event);
+
+        if (! $this->event->isActive()) {
+            return;
+        }
+
         $this->event->update(['ended_at' => now()]);
 
         Flux::toast(__('Event ended.'));
@@ -65,6 +71,11 @@ new #[Title('Event Details')] class extends Component {
     public function reopenEvent(): void
     {
         $this->authorize('update', $this->event);
+
+        if ($this->event->isActive()) {
+            return;
+        }
+
         $this->event->update(['ended_at' => null]);
 
         Flux::toast(__('Event reopened.'));

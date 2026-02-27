@@ -12,6 +12,7 @@ new #[Title('Teams')] class extends Component {
 
     public function mount(Organization $organization, Event $event): void
     {
+        abort_unless($event->organization_id === $organization->id, 404);
         $this->authorize('view', $event);
         $this->organization = $organization;
     }
