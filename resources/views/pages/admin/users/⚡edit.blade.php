@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -56,7 +57,7 @@ new #[Title('Edit User')] class extends Component {
 
         $this->user->save();
 
-        session()->flash('status', __('User updated successfully.'));
+        Flux::toast(__('User updated successfully.'));
 
         $this->redirect(route('admin.users.index'), navigate: true);
     }
@@ -69,7 +70,7 @@ new #[Title('Edit User')] class extends Component {
 
         $this->user->delete();
 
-        session()->flash('status', __('User deleted.'));
+        Flux::toast(__('User deleted.'));
 
         $this->redirect(route('admin.users.index'), navigate: true);
     }

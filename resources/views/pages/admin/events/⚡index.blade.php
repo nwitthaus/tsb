@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use Flux\Flux;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -19,17 +20,20 @@ new #[Title('Manage Events')] class extends Component {
         $this->resetPage();
     }
 
+    /** @return LengthAwarePaginator<int, Event> */
     #[Computed]
-    public function events()
+    public function events(): LengthAwarePaginator
     {
         return Event::query()
             ->with('user')
             ->withCount('teams')
             ->when($this->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('user', function ($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%");
-                    });
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($q2) use ($search) {
+                            $q2->where('name', 'like', "%{$search}%");
+                        });
+                });
             })
             ->latest()
             ->paginate(15);

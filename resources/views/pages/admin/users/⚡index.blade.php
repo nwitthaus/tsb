@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Flux\Flux;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;

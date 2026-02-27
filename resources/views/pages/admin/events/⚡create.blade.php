@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Models\User;
+use Flux\Flux;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -43,7 +44,7 @@ new #[Title('Create Event')] class extends Component {
             'user_id' => $validated['user_id'],
         ]);
 
-        session()->flash('status', __('Event created successfully.'));
+        Flux::toast(__('Event created successfully.'));
 
         $this->redirect(route('admin.events.index'), navigate: true);
     }

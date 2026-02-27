@@ -53,7 +53,7 @@ new #[Title('Edit Event')] class extends Component {
             'user_id' => $validated['user_id'],
         ]);
 
-        session()->flash('status', __('Event updated successfully.'));
+        Flux::toast(__('Event updated successfully.'));
 
         $this->redirect(route('admin.events.index'), navigate: true);
     }
@@ -72,7 +72,7 @@ new #[Title('Edit Event')] class extends Component {
     {
         $this->event->delete();
 
-        session()->flash('status', __('Event deleted successfully.'));
+        Flux::toast(__('Event deleted.'));
 
         $this->redirect(route('admin.events.index'), navigate: true);
     }

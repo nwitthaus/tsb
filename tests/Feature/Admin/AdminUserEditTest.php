@@ -123,3 +123,25 @@ test('super admin toggle is disabled when editing yourself', function () {
         ->test('pages::admin.users.edit', ['user' => $admin])
         ->assertSet('isSelf', true);
 });
+
+test('admin can delete a user from edit page', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $user = User::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.edit', ['user' => $user])
+        ->call('deleteUser')
+        ->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+});
+
+test('admin cannot delete themselves from edit page', function () {
+    $admin = User::factory()->superAdmin()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.edit', ['user' => $admin])
+        ->call('deleteUser');
+
+    $this->assertDatabaseHas('users', ['id' => $admin->id]);
+});

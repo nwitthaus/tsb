@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -30,7 +31,7 @@ new #[Title('Create User')] class extends Component {
             'is_super_admin' => $this->is_super_admin,
         ]);
 
-        session()->flash('status', __('User created successfully.'));
+        Flux::toast(__('User created successfully.'));
 
         $this->redirect(route('admin.users.index'), navigate: true);
     }
