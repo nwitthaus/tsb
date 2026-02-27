@@ -1,16 +1,12 @@
 <?php
 
-use App\Enums\OrganizationRole;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
 use Livewire\Livewire;
 
 test('owner can see events index', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
 
     Livewire::actingAs($user)
         ->test('pages::organizations.events.index', ['organization' => $organization])
@@ -18,10 +14,7 @@ test('owner can see events index', function () {
 });
 
 test('scorekeeper can see events index', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     Livewire::actingAs($user)
         ->test('pages::organizations.events.index', ['organization' => $organization])
@@ -29,20 +22,15 @@ test('scorekeeper can see events index', function () {
 });
 
 test('non-member cannot see events index', function () {
-    $user = User::factory()->create();
     $organization = Organization::factory()->create();
 
-    $this->actingAs($user)
+    $this->actingAs(User::factory()->create())
         ->get(route('organizations.events.index', $organization))
         ->assertForbidden();
 });
 
 test('events index shows active events on active tab', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
-
-    Event::factory()->create(['organization_id' => $organization->id, 'name' => 'Active Trivia']);
+    ['user' => $user, 'organization' => $organization] = createOwnerWithEvent(['name' => 'Active Trivia']);
     Event::factory()->ended()->create(['organization_id' => $organization->id, 'name' => 'Past Trivia']);
 
     Livewire::actingAs($user)
@@ -53,11 +41,7 @@ test('events index shows active events on active tab', function () {
 });
 
 test('events index shows past events on past tab', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
-
-    Event::factory()->create(['organization_id' => $organization->id, 'name' => 'Active Trivia']);
+    ['user' => $user, 'organization' => $organization] = createOwnerWithEvent(['name' => 'Active Trivia']);
     Event::factory()->ended()->create(['organization_id' => $organization->id, 'name' => 'Past Trivia']);
 
     Livewire::actingAs($user)
@@ -68,11 +52,7 @@ test('events index shows past events on past tab', function () {
 });
 
 test('events index is searchable by name', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
-
-    Event::factory()->create(['organization_id' => $organization->id, 'name' => 'Tuesday Trivia']);
+    ['user' => $user, 'organization' => $organization] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
     Event::factory()->create(['organization_id' => $organization->id, 'name' => 'Friday Quiz']);
 
     Livewire::actingAs($user)
@@ -83,10 +63,7 @@ test('events index is searchable by name', function () {
 });
 
 test('owner can delete event from index', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
 
     Livewire::actingAs($user)
         ->test('pages::organizations.events.index', ['organization' => $organization])
@@ -96,10 +73,7 @@ test('owner can delete event from index', function () {
 });
 
 test('scorekeeper cannot delete event from index', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     Livewire::actingAs($user)
         ->test('pages::organizations.events.index', ['organization' => $organization])

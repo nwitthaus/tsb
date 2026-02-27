@@ -3,6 +3,7 @@
 use App\Models\Event;
 use App\Models\Organization;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
@@ -28,12 +29,8 @@ new #[Title('Events')] class extends Component {
     #[Computed]
     public function activeEvents(): Collection
     {
-        return $this->organization->events()
+        return $this->eventsQuery()
             ->whereNull('ended_at')
-            ->withCount('teams')
-            ->when($this->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
             ->latest('starts_at')
             ->get();
     }
@@ -42,12 +39,8 @@ new #[Title('Events')] class extends Component {
     #[Computed]
     public function pastEvents(): Collection
     {
-        return $this->organization->events()
+        return $this->eventsQuery()
             ->whereNotNull('ended_at')
-            ->withCount('teams')
-            ->when($this->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
             ->latest('ended_at')
             ->get();
     }
@@ -59,6 +52,17 @@ new #[Title('Events')] class extends Component {
         $event->delete();
 
         Flux::toast(__('Event deleted.'));
+    }
+
+    /** @return Builder<Event> */
+    private function eventsQuery(): Builder
+    {
+        return $this->organization->events()
+            ->getQuery()
+            ->withCount('teams')
+            ->when($this->search, function (Builder $query, string $search) {
+                $query->where('name', 'like', "%{$search}%");
+            });
     }
 }; ?>
 

@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Models\User;
+use Livewire\Livewire;
 
 test('edit page loads and displays event details', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
@@ -15,7 +16,7 @@ test('edit page loads and displays event details', function () {
 test('can update event name', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['name' => 'Old Name']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('name', 'New Name')
         ->call('save')
@@ -27,7 +28,7 @@ test('can update event name', function () {
 test('can update event slug', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['slug' => 'old-slug']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('slug', 'new-slug')
         ->call('save')
@@ -39,7 +40,7 @@ test('can update event slug', function () {
 test('can update event start time', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('starts_at', '2026-06-15T19:00')
         ->call('save')
@@ -52,7 +53,7 @@ test('slug must be unique across events', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-slug']);
     Event::factory()->create(['slug' => 'taken-slug']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('slug', 'taken-slug')
         ->call('save')
@@ -62,7 +63,7 @@ test('slug must be unique across events', function () {
 test('slug allows keeping same slug on own event', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['slug' => 'my-slug']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('slug', 'my-slug')
         ->call('save')
@@ -72,7 +73,7 @@ test('slug allows keeping same slug on own event', function () {
 test('slug rejects invalid format', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->set('slug', 'Invalid Slug!')
         ->call('save')
@@ -91,7 +92,7 @@ test('unauthorized user cannot view event details', function () {
 test('can end an active event from edit page', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent();
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->call('endEvent');
 
@@ -101,7 +102,7 @@ test('can end an active event from edit page', function () {
 test('can reopen an ended event from edit page', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.edit', ['organization' => $organization, 'event' => $event])
         ->call('reopenEvent');
 
@@ -110,7 +111,7 @@ test('can reopen an ended event from edit page', function () {
 
 test('event must belong to organization', function () {
     ['user' => $user, 'organization' => $organization] = createOwnerWithEvent();
-    $otherEvent = \App\Models\Event::factory()->create();
+    $otherEvent = Event::factory()->create();
 
     $this->actingAs($user)
         ->get(route('organizations.events.edit', [$organization, $otherEvent]))

@@ -67,35 +67,64 @@ new #[Title('Create User')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-lg space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Create User') }}</flux:heading>
-        <flux:subheading>{{ __('Add a new user to the system.') }}</flux:subheading>
+<div class="max-w-3xl space-y-6">
+    {{-- Header --}}
+    <div class="flex items-center gap-3">
+        <flux:button variant="ghost" icon="arrow-left" :href="route('admin.users.index')" wire:navigate />
+        <div>
+            <flux:heading size="xl">{{ __('Create User') }}</flux:heading>
+            <flux:subheading>{{ __('Add a new user to the system.') }}</flux:subheading>
+        </div>
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input wire:model="name" :label="__('Name')" :placeholder="__('Full name')" required autofocus />
-        <flux:input wire:model="email" :label="__('Email')" type="email" :placeholder="__('Email address')" />
-        <flux:input wire:model="password" :label="__('Password')" type="password" />
-        <flux:input wire:model="password_confirmation" :label="__('Confirm Password')" type="password" />
+        {{-- Account Details --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Account Details') }}</flux:heading>
+                <flux:subheading>{{ __('Set the user\'s name, email, and password.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:input wire:model="name" :label="__('Name')" :placeholder="__('Full name')" required autofocus />
+                <flux:input wire:model="email" :label="__('Email')" type="email" :placeholder="__('Email address')" />
+                <flux:input wire:model="password" :label="__('Password')" type="password" />
+                <flux:input wire:model="password_confirmation" :label="__('Confirm Password')" type="password" />
+            </div>
+        </div>
 
-        <flux:switch wire:model="is_super_admin" :label="__('Super Admin')" :description="__('Grant this user full administrative access.')" />
+        {{-- Permissions --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Permissions') }}</flux:heading>
+                <flux:subheading>{{ __('Configure administrative access.') }}</flux:subheading>
+            </div>
+            <div class="bg-white p-5 dark:bg-zinc-900">
+                <flux:switch wire:model="is_super_admin" :label="__('Super Admin')" :description="__('Grant this user full administrative access.')" />
+            </div>
+        </div>
 
-        <flux:separator />
+        {{-- Organization Assignment --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Organization') }}</flux:heading>
+                <flux:subheading>{{ __('Optionally assign this user to an organization.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:select wire:model.live="organization_id" :label="__('Organization')" :placeholder="__('None')">
+                    @foreach ($this->organizations as $org)
+                        <flux:select.option :value="$org->id">{{ $org->name }}</flux:select.option>
+                    @endforeach
+                </flux:select>
 
-        <flux:select wire:model.live="organization_id" :label="__('Organization')" :placeholder="__('None')" :description="__('Optionally assign this user to an organization.')">
-            @foreach ($this->organizations as $org)
-                <flux:select.option :value="$org->id">{{ $org->name }}</flux:select.option>
-            @endforeach
-        </flux:select>
-
-        @if ($organization_id)
-            <flux:select wire:model="organization_role" :label="__('Organization Role')">
-                @foreach (App\Enums\OrganizationRole::cases() as $role)
-                    <flux:select.option :value="$role->value">{{ __(ucfirst($role->value)) }}</flux:select.option>
-                @endforeach
-            </flux:select>
-        @endif
+                @if ($organization_id)
+                    <flux:select wire:model="organization_role" :label="__('Organization Role')">
+                        @foreach (App\Enums\OrganizationRole::cases() as $role)
+                            <flux:select.option :value="$role->value">{{ __(ucfirst($role->value)) }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                @endif
+            </div>
+        </div>
 
         <div class="flex justify-end gap-2">
             <flux:button :href="route('admin.users.index')" wire:navigate>{{ __('Cancel') }}</flux:button>

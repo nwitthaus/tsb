@@ -84,28 +84,27 @@ new #[Title('Event Details')] class extends Component {
     #[Computed]
     public function scoreboardUrl(): string
     {
-        return url('/' . $this->event->slug);
+        return route('scoreboard', $this->event->slug);
     }
 
     #[Computed]
     public function qrCode(): string
     {
-        $options = new QROptions([
-            'outputType' => QRCode::OUTPUT_MARKUP_SVG,
-            'outputBase64' => false,
-            'scale' => 5,
-            'addQuietzone' => true,
-        ]);
-
-        return (new QRCode($options))->render($this->scoreboardUrl());
+        return $this->renderQrCode(QRCode::OUTPUT_MARKUP_SVG, scale: 5, base64: false);
     }
 
     #[Computed]
     public function qrCodePng(): string
     {
+        return $this->renderQrCode(QRCode::OUTPUT_IMAGE_PNG, scale: 10);
+    }
+
+    private function renderQrCode(string $outputType, int $scale, bool $base64 = true): string
+    {
         $options = new QROptions([
-            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'scale' => 10,
+            'outputType' => $outputType,
+            'outputBase64' => $base64,
+            'scale' => $scale,
             'addQuietzone' => true,
         ]);
 

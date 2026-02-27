@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Organization;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -43,27 +44,16 @@ new #[Title('Create Event')] class extends Component {
 
         $validated = $this->validate();
 
-        $tables = $validated['tables'] ?? null;
-        $rounds = $validated['rounds'] ?? null;
-        unset($validated['tables'], $validated['rounds']);
+        $event = $this->organization->events()->create(
+            Arr::only($validated, ['name', 'slug', 'starts_at']),
+        );
 
-        $event = $this->organization->events()->create($validated);
-
-        if ($tables) {
-            for ($i = 1; $i <= $tables; $i++) {
-                $event->teams()->create([
-                    'table_number' => $i,
-                    'sort_order' => $i,
-                ]);
-            }
+        for ($i = 1; $i <= ($validated['tables'] ?? 0); $i++) {
+            $event->teams()->create(['table_number' => $i, 'sort_order' => $i]);
         }
 
-        if ($rounds) {
-            for ($i = 1; $i <= $rounds; $i++) {
-                $event->rounds()->create([
-                    'sort_order' => $i,
-                ]);
-            }
+        for ($i = 1; $i <= ($validated['rounds'] ?? 0); $i++) {
+            $event->rounds()->create(['sort_order' => $i]);
         }
 
         $this->redirect(route('organizations.events.teams', [$this->organization, $event]), navigate: true);

@@ -76,25 +76,50 @@ new #[Title('Edit User')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-lg space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Edit User') }}</flux:heading>
-        <flux:subheading>{{ $user->name }} &mdash; {{ $user->email }}</flux:subheading>
+<div class="max-w-3xl space-y-6">
+    {{-- Header --}}
+    <div class="flex items-center gap-3">
+        <flux:button variant="ghost" icon="arrow-left" :href="route('admin.users.index')" wire:navigate />
+        <div>
+            <flux:heading size="xl">{{ $user->name }}</flux:heading>
+            <flux:subheading>{{ $user->email }}</flux:subheading>
+        </div>
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input wire:model="name" :label="__('Name')" />
-        <flux:input wire:model="email" :label="__('Email')" type="email" />
+        {{-- Account Details --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Account Details') }}</flux:heading>
+                <flux:subheading>{{ __('Update the user\'s name and email address.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:input wire:model="name" :label="__('Name')" />
+                <flux:input wire:model="email" :label="__('Email')" type="email" />
+            </div>
+        </div>
 
-        <flux:switch wire:model="is_super_admin" :label="__('Super Admin')" :description="__('Grant this user full administrative access.')" :disabled="$isSelf" />
+        {{-- Permissions --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Permissions') }}</flux:heading>
+                <flux:subheading>{{ __('Configure administrative access.') }}</flux:subheading>
+            </div>
+            <div class="bg-white p-5 dark:bg-zinc-900">
+                <flux:switch wire:model="is_super_admin" :label="__('Super Admin')" :description="__('Grant this user full administrative access.')" :disabled="$isSelf" />
+            </div>
+        </div>
 
-        <flux:separator />
-
-        <div class="space-y-4">
-            <flux:heading size="lg">{{ __('Change Password') }}</flux:heading>
-            <flux:subheading>{{ __('Leave blank to keep the current password.') }}</flux:subheading>
-            <flux:input wire:model="password" :label="__('New Password')" type="password" />
-            <flux:input wire:model="password_confirmation" :label="__('Confirm New Password')" type="password" />
+        {{-- Change Password --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Change Password') }}</flux:heading>
+                <flux:subheading>{{ __('Leave blank to keep the current password.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:input wire:model="password" :label="__('New Password')" type="password" />
+                <flux:input wire:model="password_confirmation" :label="__('Confirm New Password')" type="password" />
+            </div>
         </div>
 
         <div class="flex justify-end gap-2">
@@ -103,26 +128,28 @@ new #[Title('Edit User')] class extends Component {
         </div>
     </form>
 
+    {{-- Danger Zone --}}
     @unless ($isSelf)
-        <flux:separator />
-
-        <div class="space-y-3">
-            <flux:heading size="lg">{{ __('Danger Zone') }}</flux:heading>
-            <flux:card class="border-red-200 dark:border-red-800">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <flux:heading>{{ __('Delete User') }}</flux:heading>
-                        <flux:subheading>{{ __('Permanently delete this user account.') }}</flux:subheading>
-                    </div>
-                    <flux:button
-                        variant="danger"
-                        wire:click="deleteUser"
-                        wire:confirm="{{ __('Are you sure you want to delete this user? This action cannot be undone.') }}"
-                    >
-                        {{ __('Delete') }}
-                    </flux:button>
+        <div class="overflow-hidden rounded-lg border border-red-200 dark:border-red-900">
+            <div class="border-b border-red-200 bg-red-50 px-5 py-4 dark:border-red-900 dark:bg-red-950/30">
+                <flux:heading size="lg" class="!text-red-700 dark:!text-red-400">{{ __('Danger Zone') }}</flux:heading>
+                <flux:subheading class="!text-red-500/80">{{ __('Irreversible actions that affect this user.') }}</flux:subheading>
+            </div>
+            <div class="flex flex-col items-start justify-between gap-3 bg-white p-5 sm:flex-row sm:items-center dark:bg-zinc-900">
+                <div>
+                    <flux:heading>{{ __('Delete User') }}</flux:heading>
+                    <flux:subheading>{{ __('Permanently delete this user account.') }}</flux:subheading>
                 </div>
-            </flux:card>
+                <flux:button
+                    variant="danger"
+                    size="sm"
+                    class="shrink-0"
+                    wire:click="deleteUser"
+                    wire:confirm="{{ __('Are you sure you want to delete this user? This action cannot be undone.') }}"
+                >
+                    {{ __('Delete') }}
+                </flux:button>
+            </div>
         </div>
     @endunless
 </div>

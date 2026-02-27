@@ -42,6 +42,20 @@ expect()->extend('toBeOne', function () {
 */
 
 /**
+ * Create a user who owns an organization.
+ *
+ * @return array{user: \App\Models\User, organization: \App\Models\Organization}
+ */
+function createOwnerWithOrganization(): array
+{
+    $user = \App\Models\User::factory()->create();
+    $organization = \App\Models\Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Owner->value]);
+
+    return ['user' => $user, 'organization' => $organization];
+}
+
+/**
  * Create a user who owns an organization, and optionally an event within it.
  *
  * @param  array<string, mixed>  $eventAttributes
@@ -52,6 +66,25 @@ function createOwnerWithEvent(array $eventAttributes = []): array
     $user = \App\Models\User::factory()->create();
     $organization = \App\Models\Organization::factory()->create();
     $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Owner->value]);
+    $event = \App\Models\Event::factory()->create(array_merge(
+        ['organization_id' => $organization->id],
+        $eventAttributes,
+    ));
+
+    return ['user' => $user, 'organization' => $organization, 'event' => $event];
+}
+
+/**
+ * Create a scorekeeper user attached to an organization with an event.
+ *
+ * @param  array<string, mixed>  $eventAttributes
+ * @return array{user: \App\Models\User, organization: \App\Models\Organization, event: \App\Models\Event}
+ */
+function createScorekeeperWithEvent(array $eventAttributes = []): array
+{
+    $user = \App\Models\User::factory()->create();
+    $organization = \App\Models\Organization::factory()->create();
+    $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Scorekeeper->value]);
     $event = \App\Models\Event::factory()->create(array_merge(
         ['organization_id' => $organization->id],
         $eventAttributes,

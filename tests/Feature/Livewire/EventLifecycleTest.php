@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\Event;
+use Livewire\Livewire;
 
 test('host can end an active event', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent();
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
         ->call('endEvent');
 
@@ -15,7 +16,7 @@ test('host can end an active event', function () {
 test('host can reopen an ended event', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event])
         ->call('reopenEvent');
 
@@ -26,7 +27,7 @@ test('can reopen event even if user has another active event', function () {
     ['user' => $user, 'organization' => $organization] = createOwnerWithEvent();
     $endedEvent = Event::factory()->create(['organization_id' => $organization->id, 'ended_at' => now()]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $endedEvent])
         ->call('reopenEvent')
         ->assertHasNoErrors();

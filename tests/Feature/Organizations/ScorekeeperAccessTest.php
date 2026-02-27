@@ -1,20 +1,15 @@
 <?php
 
-use App\Enums\OrganizationRole;
 use App\Livewire\EventScoringGrid;
 use App\Livewire\EventTeamsManager;
 use App\Models\Event;
-use App\Models\Organization;
 use App\Models\Round;
 use App\Models\Team;
 use App\Models\User;
 use Livewire\Livewire;
 
 test('scorekeeper can view event edit page', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.events.edit', [$organization, $event]))
@@ -22,10 +17,7 @@ test('scorekeeper can view event edit page', function () {
 });
 
 test('scorekeeper cannot see edit form on event edit page', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.events.edit', [$organization, $event]))
@@ -33,10 +25,7 @@ test('scorekeeper cannot see edit form on event edit page', function () {
 });
 
 test('scorekeeper can view teams page', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.events.teams', [$organization, $event]))
@@ -44,10 +33,7 @@ test('scorekeeper can view teams page', function () {
 });
 
 test('scorekeeper cannot add team', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
 
     Livewire::actingAs($user)
         ->test(EventTeamsManager::class, ['event' => $event])
@@ -56,10 +42,7 @@ test('scorekeeper cannot add team', function () {
 });
 
 test('scorekeeper cannot update team', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
 
     Livewire::actingAs($user)
@@ -69,10 +52,7 @@ test('scorekeeper cannot update team', function () {
 });
 
 test('scorekeeper cannot remove team', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
 
     Livewire::actingAs($user)
@@ -82,10 +62,7 @@ test('scorekeeper cannot remove team', function () {
 });
 
 test('scorekeeper can view scoring grid', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'organization' => $organization, 'event' => $event] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.events.scoring', [$organization, $event]))
@@ -93,10 +70,7 @@ test('scorekeeper can view scoring grid', function () {
 });
 
 test('scorekeeper can enter scores', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id]);
     $round = Round::factory()->create(['event_id' => $event->id]);
 
@@ -112,10 +86,7 @@ test('scorekeeper can enter scores', function () {
 });
 
 test('scorekeeper cannot add round', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
 
     Livewire::actingAs($user)
         ->test(EventScoringGrid::class, ['event' => $event])
@@ -124,10 +95,7 @@ test('scorekeeper cannot add round', function () {
 });
 
 test('scorekeeper cannot remove last round', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
     Round::factory()->create(['event_id' => $event->id]);
 
     Livewire::actingAs($user)
@@ -137,10 +105,7 @@ test('scorekeeper cannot remove last round', function () {
 });
 
 test('scorekeeper cannot end event', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent();
 
     Livewire::actingAs($user)
         ->test(EventScoringGrid::class, ['event' => $event])
@@ -149,13 +114,7 @@ test('scorekeeper cannot end event', function () {
 });
 
 test('scorekeeper cannot reopen event', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
-    $event = Event::factory()->create([
-        'organization_id' => $organization->id,
-        'ended_at' => now(),
-    ]);
+    ['user' => $user, 'event' => $event] = createScorekeeperWithEvent(['ended_at' => now()]);
 
     Livewire::actingAs($user)
         ->test(EventScoringGrid::class, ['event' => $event])
@@ -164,9 +123,7 @@ test('scorekeeper cannot reopen event', function () {
 });
 
 test('scorekeeper cannot create event', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    ['user' => $user, 'organization' => $organization] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.events.create', $organization))
@@ -174,9 +131,7 @@ test('scorekeeper cannot create event', function () {
 });
 
 test('scorekeeper can view organization show page', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    ['user' => $user, 'organization' => $organization] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.show', $organization))
@@ -184,21 +139,17 @@ test('scorekeeper can view organization show page', function () {
 });
 
 test('non-member cannot enter scores', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $event = Event::factory()->create(['organization_id' => $organization->id]);
+    $event = Event::factory()->create();
     $team = Team::factory()->create(['event_id' => $event->id]);
-    $round = Round::factory()->create(['event_id' => $event->id]);
+    Round::factory()->create(['event_id' => $event->id]);
 
-    Livewire::actingAs($user)
+    Livewire::actingAs(User::factory()->create())
         ->test(EventScoringGrid::class, ['event' => $event])
         ->assertForbidden();
 });
 
 test('scorekeeper does not see settings card on org show page', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
+    ['user' => $user, 'organization' => $organization] = createScorekeeperWithEvent();
 
     $this->actingAs($user)
         ->get(route('organizations.show', $organization))

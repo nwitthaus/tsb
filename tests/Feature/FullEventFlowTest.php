@@ -1,16 +1,12 @@
 <?php
 
-use App\Enums\OrganizationRole;
-use App\Models\Organization;
-use App\Models\User;
+use Livewire\Livewire;
 
 test('complete event flow: create, add teams, add rounds, score, end', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
+    ['user' => $user, 'organization' => $organization] = createOwnerWithOrganization();
 
     // Create event
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Integration Test Trivia')
         ->set('slug', 'integration-test')
@@ -21,14 +17,14 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
     expect($event)->not->toBeNull();
 
     // Add teams via teams manager
-    $teamsManager = Livewire\Livewire::actingAs($user)
+    $teamsManager = Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event]);
 
     $teamsManager->call('addTeam', 'Team Alpha', 1);
     $teamsManager->call('addTeam', 'Team Beta', 2);
 
     // Set up rounds and enter scores via scoring grid
-    $grid = Livewire\Livewire::actingAs($user)
+    $grid = Livewire::actingAs($user)
         ->test('event-scoring-grid', ['event' => $event]);
 
     $grid->call('addRound');
@@ -43,7 +39,7 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
     $grid->call('saveScore', $teams[1]->id, $rounds[0]->id, '9');
     $grid->call('saveScore', $teams[1]->id, $rounds[1]->id, '6');
 
-    // Verify public scoreboard shows both teams (tied at 15 — order not guaranteed)
+    // Verify public scoreboard shows both teams (tied at 15 -- order not guaranteed)
     $this->get('/integration-test')
         ->assertOk()
         ->assertSee('Team Alpha')

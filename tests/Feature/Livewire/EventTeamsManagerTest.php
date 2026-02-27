@@ -2,6 +2,7 @@
 
 use App\Models\Team;
 use App\Models\User;
+use Livewire\Livewire;
 
 test('teams page loads and displays teams manager', function () {
     ['user' => $user, 'organization' => $organization, 'event' => $event] = createOwnerWithEvent(['name' => 'Tuesday Trivia']);
@@ -27,7 +28,7 @@ test('host can update a team name', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Old Name', 'table_number' => 5]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, 'New Name', 5)
         ->assertHasNoErrors();
@@ -39,7 +40,7 @@ test('host can update a team table number', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers', 'table_number' => 1]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, 'Quizzers', 7)
         ->assertHasNoErrors();
@@ -52,7 +53,7 @@ test('updating team rejects duplicate name within event', function () {
     Team::factory()->create(['event_id' => $event->id, 'name' => 'Taken Name']);
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'My Team']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, 'Taken Name', null)
         ->assertHasErrors();
@@ -64,7 +65,7 @@ test('updating team allows keeping same name', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers', 'table_number' => 3]);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, 'Quizzers', 3)
         ->assertHasNoErrors();
@@ -74,7 +75,7 @@ test('updating team requires at least name or table number', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent();
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Quizzers']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, null, null)
         ->assertHasErrors();
@@ -86,7 +87,7 @@ test('cannot update team on ended event', function () {
     ['user' => $user, 'event' => $event] = createOwnerWithEvent(['ended_at' => now()]);
     $team = Team::factory()->create(['event_id' => $event->id, 'name' => 'Old Name']);
 
-    Livewire\Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test('event-teams-manager', ['event' => $event])
         ->call('updateTeam', $team->id, 'New Name', null);
 

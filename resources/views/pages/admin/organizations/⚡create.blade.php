@@ -49,26 +49,39 @@ new #[Title('Create Organization')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-lg space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Create Organization') }}</flux:heading>
-        <flux:subheading>{{ __('Create a new organization and assign an owner.') }}</flux:subheading>
+<div class="max-w-3xl space-y-6">
+    {{-- Header --}}
+    <div class="flex items-center gap-3">
+        <flux:button variant="ghost" icon="arrow-left" :href="route('admin.organizations.index')" wire:navigate />
+        <div>
+            <flux:heading size="xl">{{ __('Create Organization') }}</flux:heading>
+            <flux:subheading>{{ __('Create a new organization and assign an owner.') }}</flux:subheading>
+        </div>
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input
-            wire:model="name"
-            :label="__('Organization Name')"
-            :placeholder="__('Acme Trivia Co')"
-            required
-            autofocus
-        />
+        {{-- Organization Details --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Organization Details') }}</flux:heading>
+                <flux:subheading>{{ __('Set the organization name and assign an owner.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:input
+                    wire:model="name"
+                    :label="__('Organization Name')"
+                    :placeholder="__('Acme Trivia Co')"
+                    required
+                    autofocus
+                />
 
-        <flux:select wire:model="owner_id" :label="__('Owner')" :placeholder="__('Select an owner...')">
-            @foreach ($this->users as $user)
-                <flux:select.option :value="$user->id">{{ $user->name }} ({{ $user->email }})</flux:select.option>
-            @endforeach
-        </flux:select>
+                <flux:select wire:model="owner_id" :label="__('Owner')" :placeholder="__('Select an owner...')">
+                    @foreach ($this->users as $user)
+                        <flux:select.option :value="$user->id">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+        </div>
 
         <div class="flex justify-end gap-2">
             <flux:button :href="route('admin.organizations.index')" wire:navigate>
