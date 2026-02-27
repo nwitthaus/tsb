@@ -61,7 +61,7 @@ new #[Title('Manage Users')] class extends Component {
         </flux:button>
     </div>
 
-    <flux:input wire:model.live.debounce.300ms="search" placeholder="{{ __('Search users...') }}" icon="magnifying-glass" />
+    <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" :placeholder="__('Search users...')" />
 
     <flux:table :paginate="$this->users">
         <flux:table.columns>
@@ -74,7 +74,7 @@ new #[Title('Manage Users')] class extends Component {
         <flux:table.rows>
             @foreach ($this->users as $user)
                 <flux:table.row :key="$user->id">
-                    <flux:table.cell>
+                    <flux:table.cell variant="strong">
                         <div class="flex items-center gap-2">
                             {{ $user->name }}
                             @if ($user->is_super_admin)

@@ -52,13 +52,12 @@ new #[Title('Edit Organization')] class extends Component {
 
     public function removeMember(int $userId): void
     {
-        if ($this->organization->owners()->count() <= 1) {
-            $member = $this->organization->users()->where('user_id', $userId)->first();
-            if ($member && $member->pivot->role === OrganizationRole::Owner->value) {
-                Flux::toast(__('Cannot remove the last owner.'), variant: 'danger');
+        $member = $this->organization->users()->where('user_id', $userId)->first();
 
-                return;
-            }
+        if ($member && $member->pivot->role === OrganizationRole::Owner->value && $this->organization->owners()->count() <= 1) {
+            Flux::toast(__('Cannot remove the last owner.'), variant: 'danger');
+
+            return;
         }
 
         $this->organization->users()->detach($userId);

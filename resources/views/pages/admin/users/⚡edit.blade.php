@@ -42,17 +42,17 @@ new #[Title('Edit User')] class extends Component {
 
     public function save(): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
-        $this->user->name = $this->name;
-        $this->user->email = $this->email;
+        $this->user->name = $validated['name'];
+        $this->user->email = $validated['email'];
 
         if (! $this->isSelf) {
             $this->user->is_super_admin = $this->is_super_admin;
         }
 
-        if (! empty($this->password)) {
-            $this->user->password = $this->password;
+        if (! empty($validated['password'])) {
+            $this->user->password = $validated['password'];
         }
 
         $this->user->save();
@@ -83,43 +83,46 @@ new #[Title('Edit User')] class extends Component {
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input wire:model="name" label="{{ __('Name') }}" />
-        <flux:input wire:model="email" label="{{ __('Email') }}" type="email" />
+        <flux:input wire:model="name" :label="__('Name')" />
+        <flux:input wire:model="email" :label="__('Email')" type="email" />
 
-        <flux:switch wire:model="is_super_admin" label="{{ __('Super Admin') }}" description="{{ __('Grant this user full administrative access.') }}" :disabled="$isSelf" />
+        <flux:switch wire:model="is_super_admin" :label="__('Super Admin')" :description="__('Grant this user full administrative access.')" :disabled="$isSelf" />
 
         <flux:separator />
 
         <div class="space-y-4">
             <flux:heading size="lg">{{ __('Change Password') }}</flux:heading>
             <flux:subheading>{{ __('Leave blank to keep the current password.') }}</flux:subheading>
-            <flux:input wire:model="password" label="{{ __('New Password') }}" type="password" />
-            <flux:input wire:model="password_confirmation" label="{{ __('Confirm New Password') }}" type="password" />
+            <flux:input wire:model="password" :label="__('New Password')" type="password" />
+            <flux:input wire:model="password_confirmation" :label="__('Confirm New Password')" type="password" />
         </div>
 
-        <div class="flex items-center gap-4">
-            <flux:button type="submit" variant="primary">{{ __('Save Changes') }}</flux:button>
+        <div class="flex justify-end gap-2">
             <flux:button :href="route('admin.users.index')" wire:navigate>{{ __('Cancel') }}</flux:button>
+            <flux:button variant="primary" type="submit">{{ __('Save Changes') }}</flux:button>
         </div>
     </form>
 
     @unless ($isSelf)
         <flux:separator />
 
-        <flux:card class="border-red-200 dark:border-red-800">
-            <div class="flex items-center justify-between">
-                <div>
-                    <flux:heading>{{ __('Danger Zone') }}</flux:heading>
-                    <flux:subheading>{{ __('Permanently delete this user account.') }}</flux:subheading>
+        <div class="space-y-3">
+            <flux:heading size="lg">{{ __('Danger Zone') }}</flux:heading>
+            <flux:card class="border-red-200 dark:border-red-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <flux:heading>{{ __('Delete User') }}</flux:heading>
+                        <flux:subheading>{{ __('Permanently delete this user account.') }}</flux:subheading>
+                    </div>
+                    <flux:button
+                        variant="danger"
+                        wire:click="deleteUser"
+                        wire:confirm="{{ __('Are you sure you want to delete this user? This action cannot be undone.') }}"
+                    >
+                        {{ __('Delete') }}
+                    </flux:button>
                 </div>
-                <flux:button
-                    variant="danger"
-                    wire:click="deleteUser"
-                    wire:confirm="{{ __('Are you sure you want to delete this user? This action cannot be undone.') }}"
-                >
-                    {{ __('Delete User') }}
-                </flux:button>
-            </div>
-        </flux:card>
+            </flux:card>
+        </div>
     @endunless
 </div>

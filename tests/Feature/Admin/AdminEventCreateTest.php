@@ -63,3 +63,57 @@ test('admin create event generates slug automatically', function () {
         'slug' => 'friday-night-trivia',
     ]);
 });
+
+test('admin can create event with pre-created tables', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $org = Organization::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.events.create')
+        ->set('name', 'Tables Event')
+        ->set('starts_at', '2026-03-20T20:00')
+        ->set('organization_id', $org->id)
+        ->set('tables', 5)
+        ->call('save')
+        ->assertRedirect(route('admin.events.index'));
+
+    $event = \App\Models\Event::where('name', 'Tables Event')->first();
+    expect($event->teams)->toHaveCount(5);
+    expect($event->teams->pluck('table_number')->all())->toBe([1, 2, 3, 4, 5]);
+});
+
+test('admin can create event with pre-created rounds', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $org = Organization::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.events.create')
+        ->set('name', 'Rounds Event')
+        ->set('starts_at', '2026-03-20T20:00')
+        ->set('organization_id', $org->id)
+        ->set('rounds', 3)
+        ->call('save')
+        ->assertRedirect(route('admin.events.index'));
+
+    $event = \App\Models\Event::where('name', 'Rounds Event')->first();
+    expect($event->rounds)->toHaveCount(3);
+});
+
+test('admin can create event with both tables and rounds', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $org = Organization::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.events.create')
+        ->set('name', 'Full Event')
+        ->set('starts_at', '2026-03-20T20:00')
+        ->set('organization_id', $org->id)
+        ->set('tables', 10)
+        ->set('rounds', 4)
+        ->call('save')
+        ->assertRedirect(route('admin.events.index'));
+
+    $event = \App\Models\Event::where('name', 'Full Event')->first();
+    expect($event->teams)->toHaveCount(10);
+    expect($event->rounds)->toHaveCount(4);
+});

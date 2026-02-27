@@ -29,10 +29,10 @@ new #[Title('Create User')] class extends Component {
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'organization_id' => 'nullable|exists:organizations,id',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'organization_id' => ['nullable', 'exists:organizations,id'],
             'organization_role' => ['required_with:organization_id', Rule::enum(OrganizationRole::class)],
         ];
     }
@@ -46,12 +46,12 @@ new #[Title('Create User')] class extends Component {
 
     public function save(): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
         $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => $this->password,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
             'is_super_admin' => $this->is_super_admin,
         ]);
 
@@ -74,7 +74,7 @@ new #[Title('Create User')] class extends Component {
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input wire:model="name" :label="__('Name')" :placeholder="__('Full name')" />
+        <flux:input wire:model="name" :label="__('Name')" :placeholder="__('Full name')" required autofocus />
         <flux:input wire:model="email" :label="__('Email')" type="email" :placeholder="__('Email address')" />
         <flux:input wire:model="password" :label="__('Password')" type="password" />
         <flux:input wire:model="password_confirmation" :label="__('Confirm Password')" type="password" />

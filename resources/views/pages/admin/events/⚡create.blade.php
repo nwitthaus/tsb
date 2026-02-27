@@ -3,6 +3,7 @@
 use App\Models\Event;
 use App\Models\Organization;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -18,23 +19,21 @@ new #[Title('Create Event')] class extends Component {
 
     public ?int $rounds = null;
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'starts_at' => 'required|date',
-            'organization_id' => 'required|exists:organizations,id',
-            'tables' => 'nullable|integer|min:1|max:200',
-            'rounds' => 'nullable|integer|min:1|max:50',
+            'name' => ['required', 'string', 'max:255'],
+            'starts_at' => ['required', 'date'],
+            'organization_id' => ['required', 'exists:organizations,id'],
+            'tables' => ['nullable', 'integer', 'min:1', 'max:200'],
+            'rounds' => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, Organization> */
+    /** @return Collection<int, Organization> */
     #[Computed]
-    public function organizations(): \Illuminate\Database\Eloquent\Collection
+    public function organizations(): Collection
     {
         return Organization::query()->orderBy('name')->get(['id', 'name']);
     }

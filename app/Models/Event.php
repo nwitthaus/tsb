@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Concerns\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperEvent
@@ -15,6 +15,8 @@ class Event extends Model
 {
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
+
+    use HasSlug;
 
     protected $fillable = [
         'organization_id',
@@ -53,19 +55,5 @@ class Event extends Model
     public function isActive(): bool
     {
         return $this->ended_at === null;
-    }
-
-    public static function generateSlug(string $name): string
-    {
-        $slug = Str::slug($name);
-        $original = $slug;
-        $counter = 1;
-
-        while (static::query()->where('slug', $slug)->first() !== null) {
-            $slug = $original.'-'.$counter;
-            $counter++;
-        }
-
-        return Str::limit($slug, 100, '');
     }
 }

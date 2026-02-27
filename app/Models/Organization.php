@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Concerns\HasSlug;
 use App\Enums\OrganizationRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperOrganization
@@ -16,6 +16,8 @@ class Organization extends Model
 {
     /** @use HasFactory<\Database\Factories\OrganizationFactory> */
     use HasFactory;
+
+    use HasSlug;
 
     protected $fillable = ['name', 'slug'];
 
@@ -41,19 +43,5 @@ class Organization extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(OrganizationInvitation::class);
-    }
-
-    public static function generateSlug(string $name): string
-    {
-        $slug = Str::slug($name);
-        $original = $slug;
-        $counter = 1;
-
-        while (static::query()->where('slug', $slug)->first() !== null) {
-            $slug = $original.'-'.$counter;
-            $counter++;
-        }
-
-        return Str::limit($slug, 100, '');
     }
 }

@@ -14,14 +14,12 @@ new #[Title('Create Organization')] class extends Component {
 
     public ?int $owner_id = null;
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'owner_id' => 'required|exists:users,id',
+            'name' => ['required', 'string', 'max:255'],
+            'owner_id' => ['required', 'exists:users,id'],
         ];
     }
 

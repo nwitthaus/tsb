@@ -3,6 +3,7 @@
 use App\Models\Event;
 use App\Models\Organization;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -24,21 +25,19 @@ new #[Title('Edit Event')] class extends Component {
         $this->organization_id = $event->organization_id;
     }
 
-    /**
-     * @return array<string, string>
-     */
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'starts_at' => 'required|date',
-            'organization_id' => 'required|exists:organizations,id',
+            'name' => ['required', 'string', 'max:255'],
+            'starts_at' => ['required', 'date'],
+            'organization_id' => ['required', 'exists:organizations,id'],
         ];
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, Organization> */
+    /** @return Collection<int, Organization> */
     #[Computed]
-    public function organizations(): \Illuminate\Database\Eloquent\Collection
+    public function organizations(): Collection
     {
         return Organization::query()->orderBy('name')->get(['id', 'name']);
     }
@@ -92,7 +91,7 @@ new #[Title('Edit Event')] class extends Component {
             </flux:button>
         @else
             <flux:badge color="zinc" size="sm">{{ __('Ended') }}</flux:badge>
-            <flux:button size="sm" wire:click="reopenEvent">
+            <flux:button size="sm" wire:click="reopenEvent" wire:confirm="{{ __('Reopen this event? It will be marked as active.') }}">
                 {{ __('Reopen Event') }}
             </flux:button>
         @endif

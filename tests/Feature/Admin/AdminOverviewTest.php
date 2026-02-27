@@ -17,11 +17,12 @@ test('admin overview shows stat cards', function () {
         ->assertSee('2');
 });
 
-test('admin overview has links to users and events pages', function () {
+test('admin overview has links to users, organizations, and events pages', function () {
     $admin = User::factory()->superAdmin()->create();
 
     Livewire::actingAs($admin)
         ->test('pages::admin.dashboard')
         ->assertSeeHtml(route('admin.users.index'))
+        ->assertSeeHtml(route('admin.organizations.index'))
         ->assertSeeHtml(route('admin.events.index'));
 });

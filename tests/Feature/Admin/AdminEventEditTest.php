@@ -32,6 +32,7 @@ test('admin can update event details', function () {
     Livewire::actingAs($admin)
         ->test('pages::admin.events.edit', ['event' => $event])
         ->set('name', 'Updated Event Name')
+        ->set('starts_at', '2026-04-01T18:00')
         ->set('organization_id', $newOrg->id)
         ->call('save')
         ->assertRedirect(route('admin.events.index'));
@@ -41,6 +42,9 @@ test('admin can update event details', function () {
         'name' => 'Updated Event Name',
         'organization_id' => $newOrg->id,
     ]);
+
+    $event->refresh();
+    expect($event->starts_at->format('Y-m-d H:i'))->toBe('2026-04-01 18:00');
 });
 
 test('admin can end an active event', function () {
@@ -90,8 +94,10 @@ test('edit event validates required fields', function () {
     Livewire::actingAs($admin)
         ->test('pages::admin.events.edit', ['event' => $event])
         ->set('name', '')
+        ->set('starts_at', '')
+        ->set('organization_id', null)
         ->call('save')
-        ->assertHasErrors(['name']);
+        ->assertHasErrors(['name', 'starts_at', 'organization_id']);
 });
 
 test('edit event has links to manage scoring and teams', function () {
