@@ -10,25 +10,25 @@ use App\Models\Team;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('scorekeeper can view event show page', function () {
+test('scorekeeper can view event edit page', function () {
     $user = User::factory()->create();
     $organization = Organization::factory()->create();
     $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
     $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
-        ->get(route('events.show', $event))
+        ->get(route('organizations.events.edit', [$organization, $event]))
         ->assertOk();
 });
 
-test('scorekeeper cannot see edit form on event show page', function () {
+test('scorekeeper cannot see edit form on event edit page', function () {
     $user = User::factory()->create();
     $organization = Organization::factory()->create();
     $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
     $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
-        ->get(route('events.show', $event))
+        ->get(route('organizations.events.edit', [$organization, $event]))
         ->assertDontSee('Save Changes');
 });
 
@@ -39,7 +39,7 @@ test('scorekeeper can view teams page', function () {
     $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
-        ->get(route('events.teams', $event))
+        ->get(route('organizations.events.teams', [$organization, $event]))
         ->assertOk();
 });
 
@@ -88,7 +88,7 @@ test('scorekeeper can view scoring grid', function () {
     $event = Event::factory()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
-        ->get(route('events.scoring', $event))
+        ->get(route('organizations.events.scoring', [$organization, $event]))
         ->assertOk();
 });
 
@@ -169,7 +169,7 @@ test('scorekeeper cannot create event', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
 
     $this->actingAs($user)
-        ->get(route('events.create', $organization))
+        ->get(route('organizations.events.create', $organization))
         ->assertForbidden();
 });
 
@@ -195,12 +195,12 @@ test('non-member cannot enter scores', function () {
         ->assertForbidden();
 });
 
-test('scorekeeper does not see create event button on org show page', function () {
+test('scorekeeper does not see settings card on org show page', function () {
     $user = User::factory()->create();
     $organization = Organization::factory()->create();
     $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
 
     $this->actingAs($user)
         ->get(route('organizations.show', $organization))
-        ->assertDontSee('Create Event');
+        ->assertDontSee('Manage Settings');
 });
