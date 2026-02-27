@@ -11,7 +11,7 @@ test('complete event flow: create, add teams, add rounds, score, end', function 
 
     // Create event
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Integration Test Trivia')
         ->set('slug', 'integration-test')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))

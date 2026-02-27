@@ -7,7 +7,7 @@ use App\Models\User;
 
 test('guests cannot access create event page', function () {
     $organization = Organization::factory()->create();
-    $this->get(route('events.create', $organization))->assertRedirect(route('login'));
+    $this->get(route('organizations.events.create', $organization))->assertRedirect(route('login'));
 });
 
 test('organization owner can view create event page', function () {
@@ -16,7 +16,7 @@ test('organization owner can view create event page', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     $this->actingAs($user)
-        ->get(route('events.create', $organization))
+        ->get(route('organizations.events.create', $organization))
         ->assertOk();
 });
 
@@ -26,7 +26,7 @@ test('scorekeeper cannot view create event page', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Scorekeeper->value]);
 
     $this->actingAs($user)
-        ->get(route('events.create', $organization))
+        ->get(route('organizations.events.create', $organization))
         ->assertForbidden();
 });
 
@@ -37,12 +37,12 @@ test('owner can create an event', function () {
     $startsAt = now()->addDay()->format('Y-m-d\TH:i');
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Tuesday Trivia')
         ->set('slug', 'tuesday-trivia')
         ->set('starts_at', $startsAt)
         ->call('save')
-        ->assertRedirect(route('events.teams', Event::first()));
+        ->assertRedirect(route('organizations.events.teams', [$organization, Event::first()]));
 
     expect(Event::count())->toBe(1)
         ->and(Event::first()->name)->toBe('Tuesday Trivia')
@@ -57,7 +57,7 @@ test('slug auto-generates from name', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Tuesday Trivia at Joe\'s')
         ->assertSet('slug', 'tuesday-trivia-at-joes');
 });
@@ -68,7 +68,7 @@ test('event name is required', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', '')
         ->set('slug', 'some-slug')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -82,7 +82,7 @@ test('starts_at is required', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'my-event')
         ->set('starts_at', '')
@@ -96,7 +96,7 @@ test('starts_at must be a valid date', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'my-event')
         ->set('starts_at', 'not-a-date')
@@ -110,7 +110,7 @@ test('starts_at must be today or later', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'my-event')
         ->set('starts_at', '2020-01-01T10:00')
@@ -125,7 +125,7 @@ test('slug must be unique', function () {
     Event::factory()->create(['slug' => 'taken-slug', 'organization_id' => $organization->id]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'taken-slug')
         ->call('save')
@@ -138,7 +138,7 @@ test('creating event with tables pre-creates numbered teams', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Table Trivia')
         ->set('slug', 'table-trivia')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -158,7 +158,7 @@ test('creating event without tables creates no teams', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'No Tables')
         ->set('slug', 'no-tables')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -174,7 +174,7 @@ test('tables must be at least 1', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'my-event')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -189,7 +189,7 @@ test('creating event with rounds pre-creates rounds', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'Round Trivia')
         ->set('slug', 'round-trivia')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -208,7 +208,7 @@ test('creating event without rounds creates no rounds', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'No Rounds')
         ->set('slug', 'no-rounds')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -224,7 +224,7 @@ test('rounds must be at least 1', function () {
     $organization->users()->attach($user, ['role' => OrganizationRole::Owner->value]);
 
     Livewire\Livewire::actingAs($user)
-        ->test('pages::events.create', ['organization' => $organization])
+        ->test('pages::organizations.events.create', ['organization' => $organization])
         ->set('name', 'My Event')
         ->set('slug', 'my-event')
         ->set('starts_at', now()->addDay()->format('Y-m-d\TH:i'))
@@ -240,6 +240,6 @@ test('owner with active event can create another', function () {
     Event::factory()->create(['organization_id' => $organization->id, 'ended_at' => null]);
 
     $this->actingAs($user)
-        ->get(route('events.create', $organization))
+        ->get(route('organizations.events.create', $organization))
         ->assertOk();
 });
