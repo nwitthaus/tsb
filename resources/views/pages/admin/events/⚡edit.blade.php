@@ -77,47 +77,53 @@ new #[Title('Edit Event')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-lg space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Edit Event') }}</flux:heading>
-        <flux:subheading>{{ $event->name }}</flux:subheading>
-    </div>
-
+<div class="max-w-3xl space-y-6">
+    {{-- Header --}}
     <div class="flex items-center gap-3">
-        @if ($event->isActive())
-            <flux:badge color="green" size="sm">{{ __('Active') }}</flux:badge>
-            <flux:button size="sm" wire:click="endEvent" wire:confirm="{{ __('End this event? It will be marked as ended.') }}">
-                {{ __('End Event') }}
-            </flux:button>
-        @else
-            <flux:badge color="zinc" size="sm">{{ __('Ended') }}</flux:badge>
-            <flux:button size="sm" wire:click="reopenEvent" wire:confirm="{{ __('Reopen this event? It will be marked as active.') }}">
-                {{ __('Reopen Event') }}
-            </flux:button>
-        @endif
+        <flux:button variant="ghost" icon="arrow-left" :href="route('admin.events.index')" wire:navigate />
+        <div class="flex items-center gap-3">
+            <div>
+                <flux:heading size="xl">{{ $event->name }}</flux:heading>
+                <flux:subheading>{{ __('Edit Event') }}</flux:subheading>
+            </div>
+            @if ($event->isActive())
+                <flux:badge color="green" size="sm">{{ __('Active') }}</flux:badge>
+            @else
+                <flux:badge color="zinc" size="sm">{{ __('Ended') }}</flux:badge>
+            @endif
+        </div>
     </div>
 
     <form wire:submit="save" class="space-y-6">
-        <flux:input
-            wire:model="name"
-            :label="__('Event Name')"
-            :placeholder="__('Tuesday Trivia at Joe\'s')"
-            required
-            autofocus
-        />
+        {{-- Event Details --}}
+        <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg">{{ __('Event Details') }}</flux:heading>
+                <flux:subheading>{{ __('Update the event name, schedule, and organization.') }}</flux:subheading>
+            </div>
+            <div class="space-y-6 bg-white p-5 dark:bg-zinc-900">
+                <flux:input
+                    wire:model="name"
+                    :label="__('Event Name')"
+                    :placeholder="__('Tuesday Trivia at Joe\'s')"
+                    required
+                    autofocus
+                />
 
-        <flux:input
-            wire:model="starts_at"
-            type="datetime-local"
-            :label="__('Scheduled Start')"
-            required
-        />
+                <flux:input
+                    wire:model="starts_at"
+                    type="datetime-local"
+                    :label="__('Scheduled Start')"
+                    required
+                />
 
-        <flux:select wire:model="organization_id" :label="__('Organization')" :placeholder="__('Select an organization...')">
-            @foreach ($this->organizations as $org)
-                <flux:select.option :value="$org->id">{{ $org->name }}</flux:select.option>
-            @endforeach
-        </flux:select>
+                <flux:select wire:model="organization_id" :label="__('Organization')" :placeholder="__('Select an organization...')">
+                    @foreach ($this->organizations as $org)
+                        <flux:select.option :value="$org->id">{{ $org->name }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+        </div>
 
         <div class="flex justify-end gap-2">
             <flux:button :href="route('admin.events.index')" wire:navigate>
@@ -129,38 +135,69 @@ new #[Title('Edit Event')] class extends Component {
         </div>
     </form>
 
-    <flux:separator />
+    {{-- Status --}}
+    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <flux:heading size="lg">{{ __('Status') }}</flux:heading>
+            <flux:subheading>{{ __('Control whether this event is active or ended.') }}</flux:subheading>
+        </div>
+        <div class="flex flex-col items-start justify-between gap-3 bg-white p-5 sm:flex-row sm:items-center dark:bg-zinc-900">
+            @if ($event->isActive())
+                <div>
+                    <flux:heading>{{ __('Event is Active') }}</flux:heading>
+                    <flux:subheading>{{ __('End this event to stop accepting scores.') }}</flux:subheading>
+                </div>
+                <flux:button size="sm" class="shrink-0" wire:click="endEvent" wire:confirm="{{ __('End this event? It will be marked as ended.') }}">
+                    {{ __('End Event') }}
+                </flux:button>
+            @else
+                <div>
+                    <flux:heading>{{ __('Event has Ended') }}</flux:heading>
+                    <flux:subheading>{{ __('Reopen this event to resume accepting scores.') }}</flux:subheading>
+                </div>
+                <flux:button size="sm" class="shrink-0" wire:click="reopenEvent" wire:confirm="{{ __('Reopen this event? It will be marked as active.') }}">
+                    {{ __('Reopen Event') }}
+                </flux:button>
+            @endif
+        </div>
+    </div>
 
-    <div class="space-y-3">
-        <flux:heading size="lg">{{ __('Quick Links') }}</flux:heading>
-        <div class="flex gap-2">
-            <flux:button :href="route('events.show', $event)" wire:navigate>
+    {{-- Quick Links --}}
+    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="border-b border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <flux:heading size="lg">{{ __('Quick Links') }}</flux:heading>
+            <flux:subheading>{{ __('Navigate to related pages for this event.') }}</flux:subheading>
+        </div>
+        <div class="flex gap-2 bg-white p-5 dark:bg-zinc-900">
+            <flux:button :href="route('organizations.events.edit', [$event->organization, $event])" wire:navigate>
                 {{ __('Manage Details') }}
             </flux:button>
-            <flux:button :href="route('events.teams', $event)" wire:navigate>
+            <flux:button :href="route('organizations.events.teams', [$event->organization, $event])" wire:navigate>
                 {{ __('Manage Teams') }}
             </flux:button>
         </div>
     </div>
 
-    <flux:separator />
-
-    <div class="space-y-3">
-        <flux:heading size="lg">{{ __('Danger Zone') }}</flux:heading>
-        <flux:card class="border-red-200 dark:border-red-800">
-            <div class="flex items-center justify-between">
-                <div>
-                    <flux:heading>{{ __('Delete Event') }}</flux:heading>
-                    <flux:subheading>{{ __('Permanently delete this event and all its data.') }}</flux:subheading>
-                </div>
-                <flux:button
-                    variant="danger"
-                    wire:click="deleteEvent"
-                    wire:confirm="{{ __('Delete this event? This will permanently remove the event and all its data. This cannot be undone.') }}"
-                >
-                    {{ __('Delete') }}
-                </flux:button>
+    {{-- Danger Zone --}}
+    <div class="overflow-hidden rounded-lg border border-red-200 dark:border-red-900">
+        <div class="border-b border-red-200 bg-red-50 px-5 py-4 dark:border-red-900 dark:bg-red-950/30">
+            <flux:heading size="lg" class="!text-red-700 dark:!text-red-400">{{ __('Danger Zone') }}</flux:heading>
+            <flux:subheading class="!text-red-500/80">{{ __('Irreversible actions that affect this event.') }}</flux:subheading>
+        </div>
+        <div class="flex flex-col items-start justify-between gap-3 bg-white p-5 sm:flex-row sm:items-center dark:bg-zinc-900">
+            <div>
+                <flux:heading>{{ __('Delete Event') }}</flux:heading>
+                <flux:subheading>{{ __('Permanently delete this event and all its data.') }}</flux:subheading>
             </div>
-        </flux:card>
+            <flux:button
+                variant="danger"
+                size="sm"
+                class="shrink-0"
+                wire:click="deleteEvent"
+                wire:confirm="{{ __('Delete this event? This will permanently remove the event and all its data. This cannot be undone.') }}"
+            >
+                {{ __('Delete') }}
+            </flux:button>
+        </div>
     </div>
 </div>

@@ -10,16 +10,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Organization routes
     Route::livewire('organizations/create', 'pages::organizations.create')->name('organizations.create');
     Route::livewire('organizations/{organization}/settings', 'pages::organizations.settings')->name('organizations.settings');
-    Route::livewire('organizations/{organization}/events/create', 'pages::events.create')->name('events.create');
+    Route::livewire('organizations/{organization}/events', 'pages::organizations.events.index')->name('organizations.events.index');
+    Route::livewire('organizations/{organization}/events/create', 'pages::organizations.events.create')->name('organizations.events.create');
+    Route::livewire('organizations/{organization}/events/{event}', 'pages::organizations.events.edit')->name('organizations.events.edit');
+    Route::livewire('organizations/{organization}/events/{event}/teams', 'pages::organizations.events.teams')->name('organizations.events.teams');
+    Route::livewire('organizations/{organization}/events/{event}/scoring', 'pages::organizations.events.scoring')->name('organizations.events.scoring');
     Route::livewire('organizations/{organization}', 'pages::organizations.show')->name('organizations.show');
 
     // Invitation routes
     Route::livewire('invitations/{token}', 'pages::invitations.accept')->name('invitations.accept');
-
-    // Event routes
-    Route::livewire('events/{event}/teams', 'pages::events.teams')->name('events.teams');
-    Route::livewire('events/{event}/scoring', 'pages::events.scoring')->name('events.scoring');
-    Route::livewire('events/{event}', 'pages::events.show')->name('events.show');
 
     // Admin routes
     Route::middleware('super-admin')->prefix('admin')->group(function () {
