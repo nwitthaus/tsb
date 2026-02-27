@@ -43,33 +43,36 @@ class extends Component {
     }
 }; ?>
 
-<div class="min-h-screen bg-[#0a0a0a] font-body text-white">
-    {{-- Ticker bar --}}
-    <div class="h-1 animate-ticker bg-gradient-to-r from-red-600 via-amber-500 to-red-600"></div>
+<div class="bg-grid-subtle relative min-h-screen overflow-hidden bg-[#F2F2F0] font-grotesk text-[#141414]">
+    {{-- Diagonal accent stripes --}}
+    <div class="pointer-events-none absolute -top-12 right-20 h-[300px] w-[3px] rotate-[-20deg] bg-red-600/50"></div>
+    <div class="pointer-events-none absolute -top-8 right-[94px] h-[280px] w-px rotate-[-20deg] bg-red-600/30"></div>
+
+    {{-- Top bar --}}
+    <div class="relative border-b-2 border-[#141414] py-3.5 text-center">
+        <span class="font-heading text-xs font-bold uppercase tracking-[0.2em]">Trivia Scoreboard</span>
+        <span class="ml-3 bg-red-600 px-2 py-0.5 text-[10px] font-bold tracking-[0.1em] text-white">LIVE</span>
+    </div>
 
     {{-- Hero --}}
-    <div class="relative overflow-hidden px-6 pb-12 pt-16 sm:px-12 md:px-20 lg:px-28">
-        {{-- Red radial glow --}}
-        <div class="pointer-events-none absolute -right-20 -top-32 size-[400px] rounded-full bg-red-600/10 blur-3xl"></div>
-
-        {{-- Live badge --}}
-        <div class="mb-8 inline-flex items-center gap-2 rounded bg-red-600 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.15em]">
-            <span class="inline-block size-2 animate-pulse-dot rounded-full bg-white"></span>
-            Live Scoring
+    <div class="relative mx-auto max-w-[640px] px-8 pb-12 pt-[72px] text-center">
+        {{-- Section label --}}
+        <div class="mb-5 text-[10px] font-medium uppercase tracking-[0.25em] text-[#7A7A7A]">
+            &mdash;&mdash; Real-time Scoring &mdash;&mdash;
         </div>
 
         {{-- Heading --}}
-        <h1 class="font-display text-5xl uppercase leading-none tracking-tight sm:text-6xl lg:text-7xl">
+        <h1 class="font-heading text-[56px] font-bold uppercase leading-[0.95] tracking-tight sm:text-[64px]">
             TRIVIA<br>
             <span class="text-red-600">SCORE</span>BOARD
         </h1>
 
-        <p class="mt-4 max-w-md text-lg font-light text-zinc-400">
-            Real-time scoring for your trivia nights. Free, fast, no app needed.
+        <p class="mx-auto mt-5 max-w-[360px] text-[15px] leading-relaxed text-[#7A7A7A]">
+            Free, fast, no app needed. Enter a code and your audience scores along in real time.
         </p>
 
-        {{-- Join form --}}
-        <form wire:submit="join" class="mt-10 max-w-md">
+        {{-- Join form in bordered frame --}}
+        <form wire:submit="join" class="mx-auto mt-11 max-w-[440px] border-2 border-[#141414] bg-white p-6">
             <div class="flex">
                 <input
                     wire:model="code"
@@ -77,42 +80,44 @@ class extends Component {
                     placeholder="ENTER CODE"
                     maxlength="20"
                     autofocus
-                    class="flex-1 rounded-l-lg border-2 border-white/10 border-r-transparent bg-white/5 px-5 py-3.5 font-mono text-base uppercase tracking-widest text-white placeholder-zinc-600 outline-none transition-colors focus:border-red-600 focus:border-r-transparent"
+                    class="flex-1 border-2 border-r-0 border-[#141414] bg-transparent px-4 py-3.5 font-mono text-[13px] uppercase tracking-[0.1em] text-[#141414] placeholder-[#B0B0B0] outline-none transition-colors focus:border-red-600 focus:border-r-0"
                 />
                 <button
                     type="submit"
-                    class="rounded-r-lg border-2 border-red-600 bg-gradient-to-br from-red-600 to-red-700 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all hover:from-red-500 hover:to-red-600"
+                    class="border-2 border-red-600 bg-red-600 px-6 py-3.5 font-heading text-[13px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-red-700 hover:border-red-700"
                 >
-                    Join&nbsp;Game
+                    JOIN
                 </button>
             </div>
             @error('code')
-                <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                <p class="mt-2 text-left text-sm text-red-600">{{ $message }}</p>
             @enderror
         </form>
 
         {{-- Host links --}}
-        <p class="mt-8 text-sm text-zinc-500">
-            Hosting tonight?
-            <a href="{{ route('login') }}" class="font-semibold text-red-600 hover:text-red-500" wire:navigate>Log in</a>
+        <p class="mt-5 text-xs tracking-[0.04em] text-[#7A7A7A]">
+            Hosting?
+            <a href="{{ route('login') }}" class="font-bold text-[#141414] underline hover:text-red-600" wire:navigate>Log in</a>
             or
-            <a href="{{ route('register') }}" class="font-semibold text-red-600 hover:text-red-500" wire:navigate>Create an account</a>
+            <a href="{{ route('register') }}" class="font-bold text-[#141414] underline hover:text-red-600" wire:navigate>Register</a>
         </p>
     </div>
 
-    {{-- Stats strip --}}
-    <div class="flex border-t border-white/[0.06]">
-        <div class="flex-1 border-r border-white/[0.06] px-6 py-5 text-center sm:px-8">
-            <div class="font-display text-3xl text-red-600">{{ number_format($this->eventCount) }}</div>
-            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Events Hosted</div>
-        </div>
-        <div class="flex-1 border-r border-white/[0.06] px-6 py-5 text-center sm:px-8">
-            <div class="font-display text-3xl text-red-600">{{ number_format($this->teamCount) }}</div>
-            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Teams Scored</div>
-        </div>
-        <div class="flex-1 px-6 py-5 text-center sm:px-8">
-            <div class="font-display text-3xl text-red-600">5s</div>
-            <div class="mt-1 text-[11px] uppercase tracking-[0.1em] text-zinc-500">Live Refresh</div>
+    {{-- Stats with heavy dividers --}}
+    <div class="relative mx-auto max-w-[640px] border-y-2 border-[#141414]">
+        <div class="flex">
+            <div class="flex-1 border-r-2 border-[#141414] py-6 text-center">
+                <div class="font-heading text-4xl font-bold text-[#141414]">{{ number_format($this->eventCount) }}</div>
+                <div class="mt-1 text-[10px] font-medium uppercase tracking-[0.15em] text-[#7A7A7A]">Events</div>
+            </div>
+            <div class="flex-1 border-r-2 border-[#141414] py-6 text-center">
+                <div class="font-heading text-4xl font-bold text-[#141414]">{{ number_format($this->teamCount) }}</div>
+                <div class="mt-1 text-[10px] font-medium uppercase tracking-[0.15em] text-[#7A7A7A]">Teams</div>
+            </div>
+            <div class="flex-1 py-6 text-center">
+                <div class="font-heading text-4xl font-bold text-red-600">5s</div>
+                <div class="mt-1 text-[10px] font-medium uppercase tracking-[0.15em] text-[#7A7A7A]">Refresh</div>
+            </div>
         </div>
     </div>
 </div>

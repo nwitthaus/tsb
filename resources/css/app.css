@@ -12,6 +12,8 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-display: 'Archivo Black', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Oswald', ui-sans-serif, system-ui, sans-serif;
+    --font-grotesk: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'Space Mono', ui-monospace, monospace;
 
     --color-zinc-50: #fafafa;
@@ -62,6 +64,14 @@ input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* Homepage geometric grid background */
+.bg-grid-subtle {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
 }
 
 /* Broadcast homepage animations */
