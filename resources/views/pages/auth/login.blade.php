@@ -22,16 +22,9 @@
 
             <!-- Password -->
             <div>
-                <div class="flex items-baseline justify-between">
-                    <label for="password" class="block font-grotesk text-[11px] font-medium uppercase tracking-[0.15em] text-[#7A7A7A]">
-                        {{ __('Password') }}
-                    </label>
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-[11px] font-semibold text-red-600 hover:text-red-700" wire:navigate>
-                            {{ __('Forgot?') }}
-                        </a>
-                    @endif
-                </div>
+                <label for="password" class="block font-grotesk text-[11px] font-medium uppercase tracking-[0.15em] text-[#7A7A7A]">
+                    {{ __('Password') }}
+                </label>
                 <div x-data="{ show: false }" class="relative mt-1.5">
                     <input
                         id="password"
@@ -55,6 +48,13 @@
                 @error('password')
                     <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
                 @enderror
+                @if (Route::has('password.request'))
+                    <div class="mt-1.5 text-right">
+                        <a href="{{ route('password.request') }}" class="text-[11px] font-semibold text-red-600 hover:text-red-700" wire:navigate>
+                            {{ __('Forgot your password?') }}
+                        </a>
+                    </div>
+                @endif
             </div>
 
             <!-- Remember Me -->
