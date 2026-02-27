@@ -5,15 +5,15 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-5">
             @csrf
             <!-- Token -->
             <input type="hidden" name="token" value="{{ request()->route('token') }}">
 
             <!-- Email Address -->
-            <flux:input
+            <x-auth-input
                 name="email"
-                value="{{ request('email') }}"
+                :value="request('email')"
                 :label="__('Email')"
                 type="email"
                 required
@@ -21,32 +21,24 @@
             />
 
             <!-- Password -->
-            <flux:input
+            <x-auth-password-input
                 name="password"
                 :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
                 :placeholder="__('Password')"
-                viewable
+                autocomplete="new-password"
             />
 
             <!-- Confirm Password -->
-            <flux:input
+            <x-auth-password-input
                 name="password_confirmation"
                 :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
                 :placeholder="__('Confirm password')"
-                viewable
+                autocomplete="new-password"
             />
 
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="reset-password-button">
-                    {{ __('Reset password') }}
-                </flux:button>
-            </div>
+            <button type="submit" class="flex h-11 w-full items-center justify-center border-2 border-red-600 bg-red-600 font-heading text-[13px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:border-red-700 hover:bg-red-700" data-test="reset-password-button">
+                {{ __('Reset password') }}
+            </button>
         </form>
     </div>
 </x-layouts::auth>
